@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+{% load static %}
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <link rel="stylesheet" href="{% static "css/style.css" %}" />
+    <html>
+        <head>
+            
+            <nav>
+                <h2 id="logo">BookEnd</h2>
+                <!-- <img class ="hamburger" src="./img/burger2.png" > -->
+
+                <h1></h1>
+                <button onclick="location.href='/'"  id = "close"></button>
+            </nav>
+        </head>
+
+        <body style="background-image: url('../image/blueBackground.jpg')">
+            <form action="signup.php" method="post" enctype="multipart/form-data" >
+            <div class="container" style="padding-top:0%;">
+                
+            <div class="jumbotron" style="background-color:white;">
+                
+             <h1 style="text-align:center;"> Sign In </h1>
+             <div style ="color:black;  text-align: center;">Don't have an account? <a href="/signup">Sign up</a></div>
+          
+    
+                    <div class="form-group ">
+                        <label for="email">Email Address </label>
+                        <input type="email" name="email" class="form-control" id="inputAddress">
+                 
+                    </div>
+  
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" class="form-control" id="inputPassword">
+               
+
+                   
+                </div>
+             
+            <button type="button" class="btn btn-outline-primary btn-lg" style=" border-radius: 15px; width: 20%;" >Sign In</button>
+            <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+            
+                </div>   
+                
+            </div> 
+        </form>
+
+        </body>
+
+        <style>
+            h1{
+                text-align: center;
+              
+                padding-bottom: 50px;
+            }
+            h2{
+                padding-bottom: 20px;
+            }
+            #close{
+              
+                
+                height: fit-content;
+               
+               
+                outline:0;
+                transition-duration: 0.4s;
+                border: none;
+
+                position: absolute;
+                right: 32px;
+               
+                width: 32px;
+                height: 32px;
+                opacity: 0.3;
+
+                
+            }
+            #close:hover{
+             
+                opacity: 1;
+            }
+
+            #close:before, #close:after {
+                position: absolute;
+                left: 15px;
+                content: ' ';
+                height: 33px;
+                width: 2px;
+                background-color: #333;
+            }
+            #close:before {
+                transform: rotate(45deg);
+            }
+            #close:after {
+                transform: rotate(-45deg);
+            }
+
+        </style>
+    </html>

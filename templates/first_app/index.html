@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static "css/style.css" %}" />
+   
+
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <h2 id="logo">BookEnd</h2>
+            <!-- <img class ="hamburger" src="./img/burger2.png" > -->
+            <button id ="signin" onclick="location.href='./signin'" type="button" class="btn btn-outline-primary">Sign In</button>
+        </nav>
+        <section>
+            <div class="hero">
+                <img src="{% static "images/book.jpg" %}" class='img'> 
+                <h3 class="headline">Book Meetings faster
+
+                </br> With the smart scheduling 
+             
+                <div class = "headbutton"><button onclick="location.href='./signup'" type="button" class="btn btn-primary btn-lg" >Get Started</button></div>
+                </h3>
+                <!-- <div class = "headbutton"><button type="button" class="btn btn-primary btn-lg">Large button</button></div> -->
+                <!-- <button type="button" class="btn btn-primary btn-lg" id ="start">Large button</button> -->
+            </div>
+            
+         
+        </section>
+
+       
+    </header>
+    <div class="slider"></div>
+
+    <!-- bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js">
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TimelineMax.min.js"></script>
+    <!-- <img src="{% static "images/book.jpg" %}" alt = 'something wrong' class='img'>  -->
+    <script src="{% static 'js/app.js' %}"></script>
+  
+</body>
+</html>
