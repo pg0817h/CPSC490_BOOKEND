@@ -1,25 +1,18 @@
-
-<!DOCTYPE html>
+ 
+<!-- <!DOCTYPE html>  -->
+{% extends "nav/nav.html" %}
 {% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static "css/style.css" %}" />
-   
+{% block body_block %}
 
-    <title>Document</title>
-</head>
-<body>
+ <body> 
     <header>
-        <nav>
+        <!-- <nav>
             <h2 id="logo">BookEnd</h2>
-            <!-- <img class ="hamburger" src="./img/burger2.png" > -->
+         
             <button id ="signin" onclick="location.href='./signin'" type="button" class="btn btn-outline-primary">Sign In</button>
-        </nav>
+        </nav>  -->
+       
+      
         <section>
             <div class="hero">
                 <img src="{% static "images/book.jpg" %}" class='img'> 
@@ -29,8 +22,7 @@
              
                 <div class = "headbutton"><button onclick="location.href='./signup'" type="button" class="btn btn-primary btn-lg" >Get Started</button></div>
                 </h3>
-                <!-- <div class = "headbutton"><button type="button" class="btn btn-primary btn-lg">Large button</button></div> -->
-                <!-- <button type="button" class="btn btn-primary btn-lg" id ="start">Large button</button> -->
+               
             </div>
             
          
@@ -39,6 +31,7 @@
        
     </header>
     <div class="slider"></div>
+
 
     <!-- bootstrap -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
@@ -53,4 +46,5 @@
     <script src="{% static 'js/app.js' %}"></script>
   
 </body>
-</html>
+
+<!-- {% endblock %} -->
