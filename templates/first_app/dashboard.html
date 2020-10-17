@@ -1,0 +1,9 @@
+ 
+<!DOCTYPE html> 
+{% extends "nav/nav.html" %}
+{% load static %}
+{% block nav %}
+
+<h1>dashboard</h1>
+<a class="btn btn-info left" href="{% url 'first_app:calendar' %}"> Calendar </a>
+{% endblock %}

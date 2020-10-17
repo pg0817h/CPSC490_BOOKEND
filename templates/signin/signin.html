@@ -1,54 +1,54 @@
 <!DOCTYPE html>
+{% extends "nav/nav.html" %}
 {% load static %}
-    <meta charset="utf-8">
+{% block nav-sign %}
+
+    <!-- <meta charset="utf-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
-    <link rel="stylesheet" href="{% static "css/style.css" %}" />
-    <html>
-        <head>
-            
+    <link rel="stylesheet" href="{% static "css/style.css" %}" /> -->
+  
+        
+<!--             
             <nav>
                 <h2 id="logo">BookEnd</h2>
-                <!-- <img class ="hamburger" src="./img/burger2.png" > -->
-
+              
                 <h1></h1>
                 <button onclick="location.href='/'"  id = "close"></button>
-            </nav>
-        </head>
-
-        <body>
-            <form action="signup.php" method="post" enctype="multipart/form-data" >
+            </nav> -->
+            <button onclick="location.href='/'"  id = "close"></button>
+        </nav>
+            <form action="{% url 'first_app:signin'%}" method="POST" >
+                {% csrf_token %}
             <div class="container" style="padding-top:0%;">
                 
             <div class="jumbotron" style="background-color:white;">
                 
-             <h1 style="text-align:center;"> Sign In </h1>
-             <div style ="color:black;  text-align: center;">Don't have an account? <a href="/signup">Sign up</a></div>
+             <h1 style="text-align:center;"> Sign In </h1>                           
+             <div style ="color:black;  text-align: center;">Don't have an account? <a href = "{% url 'first_app:signup' %}">Sign up</a></div>
           
-    
+
                     <div class="form-group ">
-                        <label for="email">Email Address </label>
-                        <input type="email" name="email" class="form-control" id="inputAddress">
-                 
+                        <label for="username">Username: </label>
+                        <input type="text" name="username" class="form-control" >  
                     </div>
   
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" name="password" class="form-control" id="inputPassword">
-               
-
-                   
-                </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" class="form-control" id="inputPassword">
+                    </div>
              
-            <button type="button" class="btn btn-outline-primary btn-lg" style=" border-radius: 15px; width: 20%;" >Sign In</button>
-            <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+            <button type="submit" class="btn btn-outline-primary btn-lg" style=" border-radius: 15px; width: 20%;"  value ='Login'>Sign In</button>
+        
             
                 </div>   
                 
             </div> 
         </form>
 
-        </body>
+
+<button onclick="location.href='/'"  id = "close"></button> 
+       
 
         <style>
             h1{
@@ -99,4 +99,5 @@
             }
 
         </style>
-    </html>
+
+{% endblock nav-sign %}   

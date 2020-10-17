@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from first_app.models import UserProfileInfo
 from django.core import validators 
 from django.core.exceptions import ValidationError
+from django.forms import ModelForm, DateInput
+from first_app.models import Event, EventMember 
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget = forms.PasswordInput())
@@ -28,3 +30,27 @@ class UserToken(forms.ModelForm):
     class Meta():
         model = UserProfileInfo
         fields = ('user_token',)
+
+
+class EventForm(ModelForm):
+    class Meta:
+        model = Event
+
+        widgets = {
+            'start_time': DateInput(attrs= {'type': 'datatime-local'}, format='%Y-%m-%dT%H:%M'),
+            'end_time': DateInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
+
+
+        }
+
+        exclude = ['user']
+
+
+    def __init__(self, *args, **kwargs):
+        super(EventForm,self).__init__(*args, **kwargs)
+        self.fields['start_time'].input_formats = ('%Y-%m-%dT%H:%M',)
+        self.fields['end_time'].input_formats = ('%Y-%m-%dT%H:%M',)
+
+
+
+

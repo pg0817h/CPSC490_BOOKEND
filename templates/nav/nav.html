@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,16 +10,39 @@
     <link rel="stylesheet" href="{% static "css/style.css" %}" />
 </head>
 <body>
-   
+  
         <nav>
+           
             <h2 id="logo">BookEnd</h2>
+            <!-- <a class="navbar-brand" id = "logo " href = "{% url 'index' %}">BOOKEND</a> -->
+           
             <!-- <img class ="hamburger" src="./img/burger2.png" > -->
-            <button id ="signin" onclick="location.href='./signin'" type="button" class="btn btn-outline-primary">Sign In</button>
+           
+            <!-- <button onclick="location.href='/'"  id = "close"></button> -->
+          
+            {% block nav-sign %}
+   
+       
+            {% if user.is_authenticated %}
+            <a id ="signin" class="btn btn-outline-primary" href="{% url 'logout' %}" type="button" >Logout</a>
+             {% else %}
+            <a id ="signin" href= "{% url 'first_app:signin' %}"  type="button" class="btn btn-outline-primary">Sign In</a>
+             {% endif %}
+            
+           
+           
+            <!-- <button onclick="location.href='/'"  id = "close"></button>  -->
+           
+        <h1></h1>
+       
         </nav>
-        
- 
-    {% block body_block %}
-    {% endblock %}
+            {% endblock %}   
+        {% block nav %}
+        {% endblock %}  
+       
+
+
+
  
 </body>
 </html>

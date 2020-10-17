@@ -1,8 +1,8 @@
  
-<!-- <!DOCTYPE html>  -->
+<!DOCTYPE html> 
 {% extends "nav/nav.html" %}
 {% load static %}
-{% block body_block %}
+{% block nav %}
 
  <body> 
     <header>
@@ -20,7 +20,7 @@
 
                 </br> With the smart scheduling 
              
-                <div class = "headbutton"><button onclick="location.href='./signup'" type="button" class="btn btn-primary btn-lg" >Get Started</button></div>
+                <div class = "headbutton"><a href="{% url 'first_app:signup' %}" type="button" class="btn btn-primary btn-lg" >Get Started</a></div>
                 </h3>
                
             </div>
@@ -47,4 +47,4 @@
   
 </body>
 
-<!-- {% endblock %} -->
+{% endblock %}

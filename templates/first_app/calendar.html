@@ -1,0 +1,39 @@
+ 
+<!DOCTYPE html> 
+{% extends "nav/nav.html" %}
+{% load static %}
+{% block nav %}
+<div class="container">
+    
+        <span class="left m-2" style="font-size: 20px;">Welcome, {{ request.user }}</span>
+    
+        <a class="btn btn-info right mr-2" href="{% url 'first_app:calendar' %}?{{ next_month }} "> Next Month >> </a>
+        <a class="btn btn-info right mr-2" href="{% url 'first_app:calendar' %}?{{ prev_month }}"> << Previous Month </a>
+    
+</div>
+<div class="container-lg" id ="cal">
+    {{ calendar }}
+</div>
+    
+
+
+
+<style>
+    .month{
+        text-align: center;
+        font-size:40px;
+    }
+    #cal{
+        padding-top:10%;
+    }
+    .calendar{
+        width:100%;
+       height: 60%;
+      
+     
+
+    }
+    
+</style>
+
+{% endblock %}
