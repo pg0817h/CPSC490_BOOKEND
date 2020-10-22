@@ -1,0 +1,27 @@
+.active, #nav-item:hover{
+  color: #666;
+}
+
+
+#dashboard{
+  padding-top: 10%;
+ 
+ padding-bottom: 5%;
+}
+body{
+    background-color: rgba(245, 242, 242, 0.981);
+}
+.dash-section{
+   padding-top: 5%;
+}
+.form-group{
+    width: 80%;
+    margin-left: 10%;
+}
+
+.jumbotron{
+    width: 80%;
+    height: 80%;
+    background-color: white;
+    margin: 0 10% 10% 10%;
+}

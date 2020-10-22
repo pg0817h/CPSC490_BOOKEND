@@ -4,21 +4,9 @@
 {% load crispy_forms_tags %}
 
 {% block nav-sign %}
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
-    <link rel="stylesheet" href="{% static "css/style.css" %}" />
-    <html>
-        <!-- <head>
-            
-            <nav>
-                <h2 id="logo">BookEnd</h2>
-              
 
-                <h1></h1>
-                <button onclick="location.href='/'"  id = "close"></button>
-            </nav>
-        </head> -->
+    <html>
+        
         <button onclick="location.href='/'"  id = "close"></button>
     </nav>
 
@@ -28,7 +16,9 @@
                         <div class="container">
                             <h1 style="text-align: center;">Welcome!</h1>
                             <h3 style="text-align: center;">Your account has been created.</h3>
-                            <button class="btn btn-outline-primary btn-lg" onclick="location.href='/signin'" style=" border-radius: 15px; width: 20%; margin-left: 40%; margin-top: 5%;">Continue</button>
+                            <a class="btn btn-outline-primary btn-lg" 
+                            href="{% url 'first_app:signin' %}" 
+                            style=" border-radius: 15px; width: 20%; margin-left: 40%; margin-top: 5%;">Continue</a>
                         </div>
                        
                     </div>
@@ -41,7 +31,7 @@
                 <body>
                     <form enctype="multipart/form-data" method="POST" >
                         {% csrf_token %}
-                        <div class="container" style="padding-top:0%;">
+                        <div class="container" style="padding-top:8%;">
                             
                         <div class="jumbotron" style="background-color:white;">
                             
@@ -106,7 +96,8 @@
                 width: 32px;
                 height: 32px;
                 opacity: 0.3;
-
+                background-color: rgba(0, 0, 255, 0) !important
+               
                 
             }
             #close:hover{

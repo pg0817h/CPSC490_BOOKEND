@@ -4,16 +4,16 @@
 {% load static %}
 {% block nav %}
 
-<div class="clearfix">
+<div >
     <h3>Event Name: {{ event.title }}</h3>
     <p>From <span style="color: gray;">{{ event.start_time }}</span> To <span style="color: gray;">{{ event.end_time }}</span></p>
     <hr>
     <p>{{ event.description }}</p>
 </div>
 <hr>
-<div class="clearfix">
+<div >
     <h4 class="left" > Members of this Event</h4>
-    <a class="btn btn-success right" href="{% url 'calendarapp:add_eventmember' event.id %}"> Add Member </a>
+    <a class="btn btn-primary " href="{% url 'first_app:add_eventmember' event.id %}"> Add Member </a>
 </div>
 <table class="table table-bordered">
     <thead>                  
@@ -40,6 +40,6 @@
       </tbody>
 </table>
 </div>
-
-
+</div>
+</section>
 {% endblock %}

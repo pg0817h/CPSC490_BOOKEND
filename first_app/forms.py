@@ -37,7 +37,7 @@ class EventForm(ModelForm):
         model = Event
 
         widgets = {
-            'start_time': DateInput(attrs= {'type': 'datatime-local'}, format='%Y-%m-%dT%H:%M'),
+            'start_time': DateInput(attrs= {'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
             'end_time': DateInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
 
 

@@ -30,12 +30,12 @@ class Event(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('first_app:event-detail', args=(self.id,))
+        return reverse('first_app:eventDetails', args=(self.id,))
 
 
     @property 
     def get_html_url(self):
-        url = reverse('first_app:event-detail', args=(self.id,))
+        url = reverse('first_app:eventDetails', args=(self.id,))
         return f'<a href="{url}">{self.title}</a>'
 
     

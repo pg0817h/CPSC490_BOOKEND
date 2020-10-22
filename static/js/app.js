@@ -4,6 +4,7 @@ const logo = document.querySelector('#logo');
 const signin = document.querySelector('#signin');
 const hamburger = document.querySelector('.hamburger');
 const headline = document.querySelector('.headline');
+const nav_link = document.querySelectorAll('#nav-link');
 
 const tl = new TimelineMax();
 
@@ -22,4 +23,4 @@ tl.fromTo(hero
          {x: '0%', ease: Power2.easeInOut},"-=1.2")
          .fromTo(logo, 0.5, {opacity: 0, x:30}, {opacity:1, x:0}, "-=0.5")
          .fromTo(signin, 0.5, {opacity: 0, x:30}, {opacity:1, x:0}, "-=0.5")
-         .fromTo(hamburger, 0.5, {opacity: 0, x:30}, {opacity:1, x:0}, "-=1")
+         .fromTo(nav_link, 0.5, {opacity: 0, x:30}, {opacity:1, x:0}, "-=1")

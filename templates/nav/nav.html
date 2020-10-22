@@ -7,26 +7,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
     <link rel="stylesheet" href="{% static "css/style.css" %}" />
+    <link rel="stylesheet" href="{% static "css/dash_nav.css" %}" />
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Work+Sans:wght@200&display=swap" rel="stylesheet">
 </head>
 <body>
   
         <nav>
-           
-            <h2 id="logo">BookEnd</h2>
+            {% if user.is_authenticated %}
+            <a id="logo" href="{% url 'dashboard' %}">BookEnd</a> 
+            {% else %}
+            <a id="logo" href="/">BookEnd</a> 
+            {% endif %}
+
             <!-- <a class="navbar-brand" id = "logo " href = "{% url 'index' %}">BOOKEND</a> -->
            
             <!-- <img class ="hamburger" src="./img/burger2.png" > -->
            
             <!-- <button onclick="location.href='/'"  id = "close"></button> -->
-          
+            <a id ="nav-link" href="#">About us</a>
+            <a id ="nav-link" href="#"> Feature </a>
+           
+           
             {% block nav-sign %}
    
        
             {% if user.is_authenticated %}
+           
             <a id ="signin" class="btn btn-outline-primary" href="{% url 'logout' %}" type="button" >Logout</a>
+            
              {% else %}
-            <a id ="signin" href= "{% url 'first_app:signin' %}"  type="button" class="btn btn-outline-primary">Sign In</a>
+            
+            <a id ="signin" href= "{% url 'first_app:signin' %}"  type="button" class="btn btn-outline-primary ">Sign In</a>
              {% endif %}
             
            
@@ -36,13 +49,45 @@
         <h1></h1>
        
         </nav>
+
+        
             {% endblock %}   
-        {% block nav %}
-        {% endblock %}  
+        
+     
+            {% if user.is_authenticated %}
+            <section class="dash-section">
+                <div class="jumbotron">
+                <div class="container" id ="dashboard">
+
+                    <h1>Dashboard</h1>
+                <!-- 
+                <a class="btn btn-info left" href="{% url 'first_app:calendar' %}"> Calendar </a>
+                <a class="btn btn-info right mr-2" href="{% url 'first_app:event_new' %}"> + New Event </a> -->
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        <a class="nav-item nav-link {% if request.path == '/dashboard/' %} active {% else %} ' ' {% endif %}" href="{% url 'dashboard' %}">Upcoming Events</a>
+                        <a class="nav-item nav-link {% if request.path == '/first_app/calendar/' %} active {% else %} ' ' {% endif %}" href="{% url 'first_app:calendar' %}"> Calender<span class="sr-only">(current)</span></a>
+                        <a class="nav-item nav-link {% if request.path == '/first_app/event/new/' %} active {% else %} ' ' {% endif %}" href="{% url 'first_app:event_new' %}"> + New events </a>
+                
+                        <a class="nav-item nav-link disabled" href="#">Disabled</a>
+                    </div>
+                    </div>
+                </nav>
+                </div>
+           
+            <!-- </section> -->
+            {% endif %}
        
-
-
-
- 
 </body>
+
 </html>
+<!-- <script src="{% static 'js/dash_nav.js' %}"></script> -->
+{% block nav %}
+
+        
+{% endblock %} 

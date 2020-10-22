@@ -20,7 +20,7 @@
         </nav>
             <form action="{% url 'first_app:signin'%}" method="POST" >
                 {% csrf_token %}
-            <div class="container" style="padding-top:0%;">
+            <div class="container" style="padding-top:8%;">
                 
             <div class="jumbotron" style="background-color:white;">
                 
@@ -75,7 +75,7 @@
                 width: 32px;
                 height: 32px;
                 opacity: 0.3;
-
+                background-color: rgba(0, 0, 255, 0) !important
                 
             }
             #close:hover{
