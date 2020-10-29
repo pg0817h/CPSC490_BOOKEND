@@ -5,21 +5,16 @@
 {% block nav %}
 
 <div class="container">
-
+ {% for event, value in event_dict.items %}
     <div class="card w-75">
         <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+          <h5 class="card-title">{{ event }}</h5>
+          <p class="card-text">{{ value.start }}</p>
+          <p class="card-text">{{  value.end }}</p>
           <a href="#" class="btn btn-primary">Button</a>
         </div>
       </div>
-      <div class="card w-75">
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-          <a href="#" class="btn btn-primary">Button</a>
-        </div>
-      </div>
+  {% endfor %}
 </div>
 </div>
 </section>

@@ -115,3 +115,53 @@ nav{
     font-family: 'Work Sans', sans-serif;
     
 }
+
+
+html{
+    height: 100%;
+}
+body{
+    height: 100%;
+}
+.signup_section{
+    height: 100%;
+    display: flex;
+}
+#signup_img{
+   
+    padding: 0;
+    height: 100%;
+    
+}
+
+#signup_wel{
+    font-size:40px;
+    padding-top: 7%;
+    padding-left: 10%;
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+}
+#double_column{
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    flex: 2;
+}
+.column:nth-child(2){
+    background-color:rgba(37, 27, 93, 0.726);
+}
+#google_btn{
+  
+  
+}
+
+.column{
+    flex-direction: column;
+    flex-basis: 100%;
+    flex:1;
+}

@@ -12,11 +12,26 @@ from datetime import timedelta
 import calendar 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+# from datetime import date
+
 from datetime import datetime, date
+
+
+from allauth.socialaccount import providers
+from allauth.socialaccount.models import SocialLogin, SocialToken, SocialApp
+# import datetime
+
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+
 
 from .models import *
 from .utils import Calendar
 from .forms import EventForm
+
+
 
 # Create your views here.
 def index(request):
@@ -28,7 +43,45 @@ def index(request):
             return render(request,'first_app/index.html',context=my_dict)
 @login_required
 def dashboard(request):
-    return render(request,'first_app/dashboard.html')
+    access_token = SocialToken.objects.get(account__user = request.user, account__provider='google')
+
+    social_token = SocialToken.objects.get(account__user = request.user,account__provider='google')
+    print('1',social_token.token)
+    print('2',social_token.token_secret)
+    print('3',social_token.app.client_id)
+    print('4',social_token.app.secret)
+    creds = Credentials(token = social_token.token,
+                        refresh_token = social_token.token_secret,
+                        client_id = social_token.app.client_id,
+                        client_secret= social_token.app.secret)
+
+    
+    service = build('calendar','v3', credentials = creds)
+    # now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+    now = datetime.today().isoformat() + 'Z'
+    print(now)
+    print('Getting the upcoming 10 events')
+    events_result = service.events().list(calendarId='primary', timeMin=now,
+                                        maxResults=10, singleEvents=True,
+                                        orderBy='startTime').execute()
+    
+    events = events_result.get('items', [])
+   
+    event_dict = {}
+    if not events:
+        print('No upcoming events found.')
+    else:
+        for event in events:
+            start = event['start'].get('dateTime', event['start'].get('date'))
+            end = event['end'].get('dateTime', event['end'].get('date'))
+            
+            event_dict[event['summary']] = {}
+            event_dict[event['summary']]['start'] = start
+            event_dict[event['summary']]['end'] = end
+        
+        print(event_dict)
+
+    return render(request,'first_app/dashboard.html', {'event_dict':event_dict})
 
 @login_required
 def special(request):
@@ -96,10 +149,16 @@ def signin(request):
 
 
 def get_date(req_day):
+    
     if req_day:
+      
         year, month = (int(x) for x in req_day.split('-'))
+     
         return date(year, month, day=1)
+
+    
     return datetime.today()
+    # return now
 
 
 def prev_month(m):
@@ -124,19 +183,56 @@ class CalendarView(LoginRequiredMixin, generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-     
+        
         d = get_date(self.request.GET.get('month', None))
        
         cal = Calendar(d.year, d.month)
-     
+
         html_cal = cal.formatmonth(withyear=True)
         
         context['calendar'] = mark_safe(html_cal)
+       
         context['prev_month'] = prev_month(d)
         context['next_month'] = next_month(d)
         return context
+    
 
 
+def get_event_google(request):
+        social_token = SocialToken.objects.get(account__user = request.user,account__provider='google')
+
+
+        creds = Credentials(token = social_token.token,
+                            refresh_token = social_token.token_secret,
+                            client_id = social_token.app.client_id,
+                            client_secret= social_token.app.secret)
+
+        
+        service = build('calendar','v3', credentials = creds)
+        now = datetime.today().isoformat() + 'Z'
+        print(now)
+        print('Getting the upcoming 10 events')
+        events_result = service.events().list(calendarId='primary', timeMin=now,
+                                        maxResults=10, singleEvents=True,
+                                        orderBy='startTime').execute()
+    
+        events = events_result.get('items', [])
+        print(events)
+        for event in events:
+            start_time = event['start'].get('dateTime', event['start'].get('date'))
+            end_time = event['end'].get('dateTime', event['end'].get('date'))
+            Event.objects.get_or_create(
+                user=request.user,
+                title=event['summary'],
+                description=event['summary'],
+                start_time=start_time,
+                end_time=end_time
+            )
+
+        return HttpResponseRedirect(reverse('first_app:calendar'))
+        
+  
+       
 def create_event(request):    
     form = EventForm(request.POST or None)
     if request.POST and form.is_valid():
@@ -193,3 +289,5 @@ class EventMemberDeleteView(generic.DeleteView):
     model = EventMember
     template_name = 'event_delete.html'
     success_url = reverse_lazy('first_app:calendar')
+
+

@@ -22,6 +22,7 @@ urlpatterns = [
     path('first_app/', include("first_app.urls")),
     path('dashboard/',views.dashboard, name="dashboard"),
     path('logout/',views.user_logout, name='logout'),
-    path('special/',views.special, name='special')
+    path('special/',views.special, name='special'),
+     path('accounts/', include('allauth.urls')),
    
 ]
