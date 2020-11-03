@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+{% load static %}
+{% load crispy_forms_tags %}
+{% load socialaccount %}
+
+    <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta http-equiv="X-UA-Compatible" content="ie=edge">
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        
+            <link rel="stylesheet" href="{% static "css/style.css" %}" />
+            <link rel="stylesheet" href="{% static "css/dash_nav.css" %}" />
+            <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Work+Sans:wght@200&display=swap" rel="stylesheet">
+        </head>
+        
+        <button onclick="location.href='/'"  id = "close"></button>
+    
+                <body>
+                   
+            
+                        <section class ='signup_section'>
+                            <div class="row">
+                                <div class ="column">
+                                    <!-- <div id ="signup_wel">Welcome to BookEnd</div> -->
+                               
+                                    <img src="{% static "images/cal.jpg" %}" id ="signup_img">
+                                
+                                
+                                </div>
+                                <div class ="column"> 
+                                    <div style="font-size: 20px; margin: 30% 0 0 5%;">To continue, sign in to BookEnd</div>
+                                        
+                                                <a class="btn btn-primary" id="google_btn"style="color:black; background-color: white;  margin:30% 0 0 15%; width:60%; border-color: black; "href="{% provider_login_url "google" %}" style="text-transform:none">
+                                                    <div class="container">
+                                                        <div class="row">
+                                                             <div class="col">
+                                                                 <img width="20px" style="margin-top:7px;" alt="Google sign-in" 
+                                                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+                                                              </div>
+                                                             <div class="col-6">Login with Google</div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                       
+                                        
+                                           
+                                </div>
+                            </div>
+                        </section>
+                        
+                    
+                
+              
+               
+                 
+  
+                </body>
+
+        <style>
+            
+        
+            h2{
+                padding-bottom: 20px;
+            }
+            #close{
+              
+                
+                height: fit-content;
+               
+               
+                outline:0;
+                transition-duration: 0.4s;
+                border: none;
+
+                position: absolute;
+                right: 32px;
+               
+                width: 32px;
+                height: 32px;
+                opacity: 0.3;
+                background-color: rgba(0, 0, 255, 0) !important
+               
+                
+            }
+            #close:hover{
+             
+                opacity: 1;
+            }
+
+            #close:before, #close:after {
+                position: absolute;
+                left: 15px;
+                content: ' ';
+                height: 33px;
+                width: 2px;
+                background-color: #333;
+            }
+            #close:before {
+                transform: rotate(45deg);
+            }
+            #close:after {
+                transform: rotate(-45deg);
+            }
+
+            body{
+                background-color: white;
+            }
+
+        </style>
+    </html>

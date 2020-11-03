@@ -130,8 +130,8 @@ body{
 #signup_img{
    
     padding: 0;
-    height: 100%;
-    
+    width: 100%;
+
 }
 
 #signup_wel{
@@ -153,15 +153,58 @@ body{
     flex: 2;
 }
 .column:nth-child(2){
-    background-color:rgba(37, 27, 93, 0.726);
+   
 }
 #google_btn{
   
-  
+  width: 100%;
 }
 
 .column{
     flex-direction: column;
     flex-basis: 100%;
     flex:1;
+}
+#close{
+              
+                
+    height: fit-content;
+   
+   
+    outline:0;
+    transition-duration: 0.4s;
+    border: none;
+
+    position: absolute;
+    right: 32px;
+   
+    width: 32px;
+    height: 32px;
+    opacity: 0.3;
+    background-color: rgba(0, 0, 255, 0) !important
+    
+}
+#close:hover{
+ 
+    opacity: 1;
+}
+
+#close:before, #close:after {
+    position: absolute;
+    left: 15px;
+    content: ' ';
+    height: 33px;
+    width: 2px;
+    background-color: #333;
+}
+#close:before {
+    transform: rotate(45deg);
+}
+#close:after {
+    transform: rotate(-45deg);
+}
+
+.img_logo{
+    margin: 10% 40%;
+    width: 23%;
 }
