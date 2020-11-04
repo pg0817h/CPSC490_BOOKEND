@@ -175,15 +175,23 @@ def next_month(m):
     month = 'month=' + str(next_month.year) + '-' + str(next_month.month)
     return month
 
+def delete_context_data(request):
 
+        context_user = Event.objects.filter(user=request.user).delete()
+        print(context_user)
+
+        return HttpResponseRedirect(reverse('first_app:get_event'))
+    
 class CalendarView(LoginRequiredMixin, generic.ListView):
     login_url = 'first_app:signin'
     model = Event
     template_name = 'first_app/calendar.html'
+   
 
     def get_context_data(self, **kwargs):
+        delete_context_data
         context = super().get_context_data(**kwargs)
-        context_user = Event.objects.filter(user=self.request.user)
+       
         # print('this is context_user result',context_user)
         # print('this is just context',context)
         d = get_date(self.request.GET.get('month', None))
@@ -212,11 +220,12 @@ def get_event_google(request):
 
         
         service = build('calendar','v3', credentials = creds)
-        now = datetime.today().isoformat() + 'Z'
+        # now = datetime.today().isoformat() + 'Z'
+        now = datetime.today().replace(day=1).isoformat() + 'Z'
         print(now)
-        print('Getting the upcoming 10 events')
+       
         events_result = service.events().list(calendarId='primary', timeMin=now,
-                                        maxResults=10, singleEvents=True,
+                                        maxResults=30, singleEvents=True,
                                         orderBy='startTime').execute()
     
         events = events_result.get('items', [])
@@ -243,6 +252,42 @@ def create_event(request):
         description = form.cleaned_data['description']
         start_time = form.cleaned_data['start_time']
         end_time = form.cleaned_data['end_time']
+
+        # Insert events into google calendar ########
+        social_token = SocialToken.objects.get(account__user = request.user,account__provider='google')
+
+        creds = Credentials(token = social_token.token,
+                            refresh_token = social_token.token_secret,
+                            client_id = social_token.app.client_id,
+                            client_secret= social_token.app.secret)
+
+        
+        service = build('calendar','v3', credentials = creds)
+        now = datetime.today().isoformat() + 'Z'
+        event = {
+            'summary': 
+                title,
+            
+            'start': {
+                'dateTime': start_time.isoformat(),
+                'timeZone': 'America/Los_Angeles',
+            },
+            'end': {
+                'dateTime': end_time.isoformat(),
+                'timeZone': 'America/Los_Angeles',
+            }
+        }
+        events_result = service.events().insert(calendarId='primary', body = event ).execute()
+
+
+
+
+
+        ########
+
+
+
+
         Event.objects.get_or_create(
             user=request.user,
             title=title,

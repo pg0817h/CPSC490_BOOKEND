@@ -71,7 +71,7 @@
                     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
                         <a class="nav-item nav-link {% if request.path == '/dashboard/' %} active {% else %} ' ' {% endif %}" href="{% url 'dashboard' %}">Upcoming Events</a>
-                        <a class="nav-item nav-link {% if request.path == '/first_app/calendar/' %} active {% else %} ' ' {% endif %}" href="{% url 'first_app:calendar' %}"> Calender<span class="sr-only">(current)</span></a>
+                        <a class="nav-item nav-link {% if request.path == '/first_app/event/deletegoogle' %} active {% else %} ' ' {% endif %}" href="{% url 'first_app:delete_event' %}"> Calender<span class="sr-only">(current)</span></a>
                         <a class="nav-item nav-link {% if request.path == '/first_app/event/new/' %} active {% else %} ' ' {% endif %}" href="{% url 'first_app:event_new' %}"> + New events </a>
                 
                         <a class="nav-item nav-link disabled" href="#">Disabled</a>
