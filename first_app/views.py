@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-
+from django.core import serializers
 from django.http import HttpResponse, HttpResponseRedirect
 from first_app.forms import UserForm
 from django.contrib.auth import authenticate, login, logout
@@ -11,7 +11,7 @@ from django.utils.safestring import mark_safe
 from datetime import timedelta
 import calendar 
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from .forms import AddMember
 # from datetime import date
 
 from datetime import datetime, date
@@ -58,6 +58,15 @@ def dashboard(request):
     
     service = build('calendar','v3', credentials = creds)
     # now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+    ####testing update event 
+
+    # events_test = service.events().get(calendarId='primary', eventId='eventId').execute()
+    # events_test['summary'] = 'update test'
+    # updated_event = service.events().update(calendarId='primary', eventId=event['id'], body=events_test).execute()
+
+
+
+    ########################
     now = datetime.today().isoformat() + 'Z'
     print(now)
     print('Getting the upcoming 10 events')
@@ -66,7 +75,8 @@ def dashboard(request):
                                         orderBy='startTime').execute()
     
     events = events_result.get('items', [])
-   
+    print(events)
+    print('this is testing ', events[0]['htmlLink'].split('=')[1])
     event_dict = {}
     if not events:
         print('No upcoming events found.')
@@ -79,7 +89,7 @@ def dashboard(request):
             event_dict[event['summary']]['start'] = start
             event_dict[event['summary']]['end'] = end
         
-        print(event_dict)
+      
 
     return render(request,'first_app/dashboard.html', {'event_dict':event_dict})
 
@@ -220,9 +230,9 @@ def get_event_google(request):
 
         
         service = build('calendar','v3', credentials = creds)
-        # now = datetime.today().isoformat() + 'Z'
+       
         now = datetime.today().replace(day=1).isoformat() + 'Z'
-        print(now)
+        print('this is now ',now)
        
         events_result = service.events().list(calendarId='primary', timeMin=now,
                                         maxResults=30, singleEvents=True,
@@ -264,6 +274,8 @@ def create_event(request):
         
         service = build('calendar','v3', credentials = creds)
         now = datetime.today().isoformat() + 'Z'
+       
+    
         event = {
             'summary': 
                 title,
@@ -275,7 +287,8 @@ def create_event(request):
             'end': {
                 'dateTime': end_time.isoformat(),
                 'timeZone': 'America/Los_Angeles',
-            }
+            },
+          
         }
         events_result = service.events().insert(calendarId='primary', body = event ).execute()
 
@@ -304,6 +317,7 @@ class EventEdit(generic.UpdateView):
 
 def event_details(request, event_id):
     event = Event.objects.get(id=event_id)
+
     eventmember = EventMember.objects.filter(event=event)
     context = {
         'event': event,
@@ -313,25 +327,64 @@ def event_details(request, event_id):
 
 
 def add_eventmember(request, event_id):
-    forms = AddMemberForm()
+    forms = AddMember()
+
+    now = datetime.today().replace(day=1).isoformat() + 'Z'
+    social_token = SocialToken.objects.get(account__user = request.user,account__provider='google')
+
+    creds = Credentials(token = social_token.token,
+                            refresh_token = social_token.token_secret,
+                            client_id = social_token.app.client_id,
+                            client_secret= social_token.app.secret)
+
+        
+    service = build('calendar','v3', credentials = creds)
+    events_result = service.events().list(calendarId='primary', timeMin=now,
+                                        maxResults=10, singleEvents=True,
+                                        orderBy='startTime').execute()
+    
+    eventsLists = events_result.get('items', [])
+    eventName = Event.objects.get(id=event_id)
+    for event in eventsLists:
+        print('events',event['summary'])
+        print(eventName)
+        if str(event['summary']) == str(eventName):
+           print(event['htmlLink'].split('=')[1], '+')
+        #    event_Id = str(event['htmlLink'].split('=')[1]).rstrip()
+           event_Id = event['id']
+           print('wtffffff',event_Id)
+           eventUpdater = service.events().get(calendarId='primary', eventId=event_Id).execute()
+           eventUpdater['attendees'] = []
+           eventUpdater['attendees'].append({'email':'test@test3.com'})
+           print('this is updater', eventUpdater['attendees'])
+           updated_event = service.events().update(calendarId='primary', eventId = eventUpdater['id'], body = eventUpdater).execute()
+           print(updated_event)
+
+    
+   
+    # print('this is testing ', events[0]['htmlLink'].split('=')[1])
     if request.method == 'POST':
-        forms = AddMemberForm(request.POST)
+        forms = AddMember(request.POST)
         if forms.is_valid():
             member = EventMember.objects.filter(event=event_id)
             event = Event.objects.get(id=event_id)
-            if member.count() <= 9:
-                user = forms.cleaned_data['user']
-                EventMember.objects.create(
+            print(event)
+            user = forms.cleaned_data['user']
+            EventMember.objects.create(
                     event=event,
                     user=user
-                )
-                return redirect('first_app:calendar')
-            else:
-                print('--------------limited-----------------')
+            )
+
+
+
+
+            
+            return redirect('first_app:calendar')
+           
     context = {
         'form': forms
     }
-    return render(request, 'add_member.html', context)
+    return render(request, 'first_app/add_member.html', context)
 
 class EventMemberDeleteView(generic.DeleteView):
     model = EventMember
