@@ -46,10 +46,7 @@ def dashboard(request):
     access_token = SocialToken.objects.get(account__user = request.user, account__provider='google')
 
     social_token = SocialToken.objects.get(account__user = request.user,account__provider='google')
-    print('1',social_token.token)
-    print('2',social_token.token_secret)
-    print('3',social_token.app.client_id)
-    print('4',social_token.app.secret)
+
     creds = Credentials(token = social_token.token,
                         refresh_token = social_token.token_secret,
                         client_id = social_token.app.client_id,
@@ -57,16 +54,7 @@ def dashboard(request):
 
     
     service = build('calendar','v3', credentials = creds)
-    # now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    ####testing update event 
-
-    # events_test = service.events().get(calendarId='primary', eventId='eventId').execute()
-    # events_test['summary'] = 'update test'
-    # updated_event = service.events().update(calendarId='primary', eventId=event['id'], body=events_test).execute()
-
-
-
-    ########################
+   
     now = datetime.today().isoformat() + 'Z'
     print(now)
     print('Getting the upcoming 10 events')
@@ -75,8 +63,7 @@ def dashboard(request):
                                         orderBy='startTime').execute()
     
     events = events_result.get('items', [])
-    print(events)
-    print('this is testing ', events[0]['htmlLink'].split('=')[1])
+   
     event_dict = {}
     if not events:
         print('No upcoming events found.')
@@ -188,7 +175,7 @@ def next_month(m):
 def delete_context_data(request):
 
         context_user = Event.objects.filter(user=request.user).delete()
-        print(context_user)
+        print('this is deleted user',context_user)
 
         return HttpResponseRedirect(reverse('first_app:get_event'))
     
@@ -201,9 +188,7 @@ class CalendarView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, **kwargs):
         delete_context_data
         context = super().get_context_data(**kwargs)
-       
-        # print('this is context_user result',context_user)
-        # print('this is just context',context)
+
         d = get_date(self.request.GET.get('month', None))
        
         cal = Calendar(d.year, d.month)
@@ -221,7 +206,7 @@ class CalendarView(LoginRequiredMixin, generic.ListView):
 
 def get_event_google(request):
         social_token = SocialToken.objects.get(account__user = request.user,account__provider='google')
-
+        
 
         creds = Credentials(token = social_token.token,
                             refresh_token = social_token.token_secret,
@@ -232,17 +217,27 @@ def get_event_google(request):
         service = build('calendar','v3', credentials = creds)
        
         now = datetime.today().replace(day=1).isoformat() + 'Z'
-        print('this is now ',now)
-       
+        
+        # eventUpdater = service.events().get(calendarId='primary', eventId=event_Id).execute()
+        
         events_result = service.events().list(calendarId='primary', timeMin=now,
                                         maxResults=30, singleEvents=True,
                                         orderBy='startTime').execute()
-    
+      
         events = events_result.get('items', [])
-        print(events)
+     
+   
+        # print('-----this is events',event__)
         for event in events:
+            # print('this is event ',event)
             start_time = event['start'].get('dateTime', event['start'].get('date'))
             end_time = event['end'].get('dateTime', event['end'].get('date'))
+          
+            # event_ = Event.objects.get(id=event_id)
+
+
+            # user_ = event['attendees']
+       
             Event.objects.get_or_create(
                 user=request.user,
                 title=event['summary'],
@@ -250,6 +245,20 @@ def get_event_google(request):
                 start_time=start_time,
                 end_time=end_time
             )
+            if 'attendees' in event:
+               
+                for item in event['attendees']:
+                    if 'displayName' in item:
+                        user_ = item['displayName']
+                      
+                        user_ = User.objects.get(username=user_)
+                      
+                      
+                        EventMember.objects.create(
+                            
+                            event=Event.objects.get(title=event['summary']),
+                            user=user_
+                        )
 
         return HttpResponseRedirect(reverse('first_app:calendar'))
         
@@ -299,7 +308,8 @@ def create_event(request):
         ########
 
 
-
+       
+            
 
         Event.objects.get_or_create(
             user=request.user,
@@ -319,6 +329,7 @@ def event_details(request, event_id):
     event = Event.objects.get(id=event_id)
 
     eventmember = EventMember.objects.filter(event=event)
+    # print('this is eventmember', eventmember)
     context = {
         'event': event,
         'eventmember': eventmember
@@ -328,7 +339,9 @@ def event_details(request, event_id):
 
 def add_eventmember(request, event_id):
     forms = AddMember()
-
+    
+    event = Event.objects.get(id=event_id)
+   
     now = datetime.today().replace(day=1).isoformat() + 'Z'
     social_token = SocialToken.objects.get(account__user = request.user,account__provider='google')
 
@@ -340,36 +353,40 @@ def add_eventmember(request, event_id):
         
     service = build('calendar','v3', credentials = creds)
     events_result = service.events().list(calendarId='primary', timeMin=now,
-                                        maxResults=10, singleEvents=True,
+                                        maxResults=30, singleEvents=True,
                                         orderBy='startTime').execute()
     
     eventsLists = events_result.get('items', [])
     eventName = Event.objects.get(id=event_id)
-    for event in eventsLists:
-        print('events',event['summary'])
-        print(eventName)
-        if str(event['summary']) == str(eventName):
-           print(event['htmlLink'].split('=')[1], '+')
-        #    event_Id = str(event['htmlLink'].split('=')[1]).rstrip()
-           event_Id = event['id']
-           print('wtffffff',event_Id)
-           eventUpdater = service.events().get(calendarId='primary', eventId=event_Id).execute()
-           eventUpdater['attendees'] = []
-           eventUpdater['attendees'].append({'email':'test@test3.com'})
-           print('this is updater', eventUpdater['attendees'])
-           updated_event = service.events().update(calendarId='primary', eventId = eventUpdater['id'], body = eventUpdater).execute()
-           print(updated_event)
-
-    
    
-    # print('this is testing ', events[0]['htmlLink'].split('=')[1])
     if request.method == 'POST':
         forms = AddMember(request.POST)
         if forms.is_valid():
             member = EventMember.objects.filter(event=event_id)
             event = Event.objects.get(id=event_id)
-            print(event)
+            print('event', event)
             user = forms.cleaned_data['user']
+            print('this is type of user',type(user))
+            for event_ in eventsLists:
+               
+                if str(event_['summary']) == str(eventName):
+                    event_Id = event_['id']
+                    
+                    eventUpdater = service.events().get(calendarId='primary', eventId=event_Id).execute()
+                    if 'attendees' in eventUpdater:
+                        eventUpdater['attendees'].insert(0,{'email': user.email, 'displayName': user.username })
+                    else:
+                        
+                        eventUpdater['attendees'] = [  {'email': user.email, 'displayName': user.username }]
+                      
+                    eventUpdater['reminders'] = {"useDefault": 'false',"overrides":[{'method': 'email', 'minutes': 5}, ]}
+                    updated_event = service.events().update(calendarId='primary', eventId = eventUpdater['id'], body = eventUpdater).execute()
+                    print(updated_event)
+
+
+
+
+
             EventMember.objects.create(
                     event=event,
                     user=user
