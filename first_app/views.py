@@ -6,10 +6,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.views import generic 
+from django.views import generic
 from django.utils.safestring import mark_safe
 from datetime import timedelta
-import calendar 
+import calendar
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import AddMember
 # from datetime import date
@@ -35,10 +35,10 @@ from .forms import EventForm
 
 # Create your views here.
 def index(request):
-       
+
         if request.user.is_authenticated:
             return HttpResponseRedirect(reverse('dashboard'))
-        else:   
+        else:
             my_dict = {'insert_me': "hello i am from views.py!"}
             return render(request,'first_app/index.html',context=my_dict)
 @login_required
@@ -55,10 +55,10 @@ def dashboard(request):
                         client_id = social_token.app.client_id,
                         client_secret= social_token.app.secret)
 
-    
+
     service = build('calendar','v3', credentials = creds)
     # now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    ####testing update event 
+    ####testing update event
 
     # events_test = service.events().get(calendarId='primary', eventId='eventId').execute()
     # events_test['summary'] = 'update test'
@@ -73,10 +73,10 @@ def dashboard(request):
     events_result = service.events().list(calendarId='primary', timeMin=now,
                                         maxResults=10, singleEvents=True,
                                         orderBy='startTime').execute()
-    
+
     events = events_result.get('items', [])
     print(events)
-    print('this is testing ', events[0]['htmlLink'].split('=')[1])
+    ##print('this is testing ', events[0]['htmlLink'].split('=')[1])
     event_dict = {}
     if not events:
         print('No upcoming events found.')
@@ -84,12 +84,12 @@ def dashboard(request):
         for event in events:
             start = event['start'].get('dateTime', event['start'].get('date'))
             end = event['end'].get('dateTime', event['end'].get('date'))
-            
+
             event_dict[event['summary']] = {}
             event_dict[event['summary']]['start'] = start
             event_dict[event['summary']]['end'] = end
-        
-      
+
+
 
     return render(request,'first_app/dashboard.html', {'event_dict':event_dict})
 
@@ -125,7 +125,7 @@ def signup(request):
         user_form = UserForm()
 
 
-    
+
 
     return render(request, 'signup/signup.html',{'user_form': user_form, 'registered': registered})
 
@@ -148,25 +148,25 @@ def signin(request):
             else:
                 return HttpResponse('ACCOUNT NOT ACTIVE')
 
-        else: 
+        else:
             print('Someone tried to login and failed!')
             print('Username:{} and password {}'.format(username,password))
             return HttpResponse('Invalid login details supplied!')
 
-    else: 
+    else:
         return render(request, 'signin/signin.html',{})
 
 
 
 def get_date(req_day):
-    
+
     if req_day:
-      
+
         year, month = (int(x) for x in req_day.split('-'))
-     
+
         return date(year, month, day=1)
 
-    
+
     return datetime.today()
     # return now
 
@@ -191,32 +191,32 @@ def delete_context_data(request):
         print(context_user)
 
         return HttpResponseRedirect(reverse('first_app:get_event'))
-    
+
 class CalendarView(LoginRequiredMixin, generic.ListView):
     login_url = 'first_app:signin'
     model = Event
     template_name = 'first_app/calendar.html'
-   
+
 
     def get_context_data(self, **kwargs):
         delete_context_data
         context = super().get_context_data(**kwargs)
-       
+
         # print('this is context_user result',context_user)
         # print('this is just context',context)
         d = get_date(self.request.GET.get('month', None))
-       
+
         cal = Calendar(d.year, d.month)
-    
+
         html_cal = cal.formatmonth(self.request.user,withyear=True)
-        
-        
+
+
         context['calendar'] = mark_safe(html_cal)
-        
+
         context['prev_month'] = prev_month(d)
         context['next_month'] = next_month(d)
         return context
-    
+
 
 
 def get_event_google(request):
@@ -228,16 +228,16 @@ def get_event_google(request):
                             client_id = social_token.app.client_id,
                             client_secret= social_token.app.secret)
 
-        
+
         service = build('calendar','v3', credentials = creds)
-       
+
         now = datetime.today().replace(day=1).isoformat() + 'Z'
         print('this is now ',now)
-       
+
         events_result = service.events().list(calendarId='primary', timeMin=now,
                                         maxResults=30, singleEvents=True,
                                         orderBy='startTime').execute()
-    
+
         events = events_result.get('items', [])
         print(events)
         for event in events:
@@ -252,10 +252,10 @@ def get_event_google(request):
             )
 
         return HttpResponseRedirect(reverse('first_app:calendar'))
-        
-  
-       
-def create_event(request):    
+
+
+
+def create_event(request):
     form = EventForm(request.POST or None)
     if request.POST and form.is_valid():
         title = form.cleaned_data['title']
@@ -271,15 +271,15 @@ def create_event(request):
                             client_id = social_token.app.client_id,
                             client_secret= social_token.app.secret)
 
-        
+
         service = build('calendar','v3', credentials = creds)
         now = datetime.today().isoformat() + 'Z'
-       
-    
+
+
         event = {
-            'summary': 
+            'summary':
                 title,
-            
+
             'start': {
                 'dateTime': start_time.isoformat(),
                 'timeZone': 'America/Los_Angeles',
@@ -288,7 +288,7 @@ def create_event(request):
                 'dateTime': end_time.isoformat(),
                 'timeZone': 'America/Los_Angeles',
             },
-          
+
         }
         events_result = service.events().insert(calendarId='primary', body = event ).execute()
 
@@ -337,12 +337,12 @@ def add_eventmember(request, event_id):
                             client_id = social_token.app.client_id,
                             client_secret= social_token.app.secret)
 
-        
+
     service = build('calendar','v3', credentials = creds)
     events_result = service.events().list(calendarId='primary', timeMin=now,
                                         maxResults=10, singleEvents=True,
                                         orderBy='startTime').execute()
-    
+
     eventsLists = events_result.get('items', [])
     eventName = Event.objects.get(id=event_id)
     for event in eventsLists:
@@ -360,8 +360,8 @@ def add_eventmember(request, event_id):
            updated_event = service.events().update(calendarId='primary', eventId = eventUpdater['id'], body = eventUpdater).execute()
            print(updated_event)
 
-    
-   
+
+
     # print('this is testing ', events[0]['htmlLink'].split('=')[1])
     if request.method == 'POST':
         forms = AddMember(request.POST)
@@ -378,9 +378,9 @@ def add_eventmember(request, event_id):
 
 
 
-            
+
             return redirect('first_app:calendar')
-           
+
     context = {
         'form': forms
     }
@@ -390,5 +390,3 @@ class EventMemberDeleteView(generic.DeleteView):
     model = EventMember
     template_name = 'event_delete.html'
     success_url = reverse_lazy('first_app:calendar')
-
-

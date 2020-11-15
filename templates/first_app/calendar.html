@@ -1,44 +1,81 @@
- 
-<!DOCTYPE html> 
+
+<!DOCTYPE html>
 {% extends "nav/nav.html" %}
 {% load static %}
 {% block nav %}
-
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
 <div class="container wel-container"><span class="welcome">Welcome, {{ request.user }}</span></div>
-<div class="container-lg" id ="cal">
 
-<div class="container">
-    
-   
 
-    <a class="btn btn-primary right mr-2" href="{% url 'first_app:calendar' %}?{{ next_month }} "> Next Month >> </a>
+<div class="container" id="cal">
+  {{ calendar }}
+
+</div>
+<div class="container" id="buttons">
+
     <a class="btn btn-primary right mr-2" href="{% url 'first_app:calendar' %}?{{ prev_month }}"> << Previous Month </a>
+    <a class="btn btn-primary right mr-2" href="{% url 'first_app:calendar' %}?{{ next_month }} "> Next Month >> </a>
+
 
 </div>
-    {{ calendar }}
-</div>
-    
-</div>
-</section>
+
+
 
 
 
 <style>
+   body{
+     background-color: rgb(79, 88, 176);
+   }
     .month{
         text-align: center;
         font-size:40px;
     }
-    #cal{
-        padding-top:10%;
+     #cal{
+        padding-top:10px;
+        margin-bottom: 50px;
+        position:relative;
+        bottom:130px;
+    }
+    .wel-container{
+      position:relative;
+      bottom:130px;
     }
     .calendar{
-        width:100%;
-       height: 60%;
-      
-     
+      /* width:100%;
+      height: 100%; */
+      border: solid 1px black;
+      padding-left: 10px;
 
     }
-    
+    #buttons{
+      margin-bottom: 10px;
+
+    }
+
+  td{
+      border: solid 1px black;
+      width: 150px;
+      height: 100px;
+      padding-bottom: 100px;
+  }
+
+  #week{
+    border: solid 1px black;
+    margin-top: 50px;
+  }
+
+#dashboard{
+
+position: relative;
+bottom: 100px;
+}
+
+.jumbotron{
+  border: solid 1px black;
+  padding-bottom: 100px;
+}
+
 </style>
 {% endblock %}
