@@ -1,5 +1,5 @@
- 
-<!DOCTYPE html> 
+
+<!DOCTYPE html>
 {% extends "nav/nav.html" %}
 {% load static %}
 {% block nav %}
@@ -16,7 +16,7 @@
     <a class="btn btn-primary " href="{% url 'first_app:add_eventmember' event.id %}"> Add Member </a>
 </div>
 <table class="table table-bordered">
-    <thead>                  
+    <thead>
         <tr>
           <th style="width: 10px">#</th>
           <th>Name</th>
@@ -40,7 +40,10 @@
         {% endfor %}
       </tbody>
 </table>
-</div>
-</div>
-</section>
+<style>
+body{
+  background-color: rgb(79, 88, 176);
+}
+</style>
+
 {% endblock %}

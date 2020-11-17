@@ -1,5 +1,5 @@
- 
-<!DOCTYPE html> 
+
+<!DOCTYPE html>
 {% extends "nav/nav.html" %}
 {% load static %}
 {% block nav %}
@@ -7,16 +7,21 @@
 {% load crispy_forms_tags %}
 
 
-  
+
   <form method="post">
     {% csrf_token %}
     <table class="form form-table">
       <div class="form-group ">
       {{ form | crispy }}
       </div>
+<style>
+body{
+  background-color: rgb(79, 88, 176);
+}
+</style>
     
 
-     
+
       <tr><td colspan="2"><button type="submit" class="btn btn-primary right"> Submit </button></td></tr>
     </table>
   </form>
