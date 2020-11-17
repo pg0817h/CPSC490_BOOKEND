@@ -122,6 +122,13 @@ def index(request):
         else:   
             my_dict = {'insert_me': "hello i am from views.py!"}
             return render(request,'first_app/index.html',context=my_dict)
+            
+def about(request):
+    return render(request, 'nav/about.html')
+    
+def features(request):
+    return render(request, 'nav/features.html')
+            
 @login_required
 def dashboard(request):
     access_token = SocialToken.objects.get(account__user = request.user, account__provider='google')

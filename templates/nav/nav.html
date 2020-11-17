@@ -26,8 +26,8 @@
             <!-- <img class ="hamburger" src="./img/burger2.png" > -->
            
             <!-- <button onclick="location.href='/'"  id = "close"></button> -->
-            <a id ="nav-link" href="#">About us</a>
-            <a id ="nav-link" href="#"> Feature </a>
+            <a id ="nav-link" href="{% url 'first_app:about' %}">About us</a>
+            <a id ="nav-link" href="{% url 'first_app:features' %}"> Feature </a>
            
            
             {% block nav-sign %}

@@ -8,6 +8,8 @@ app_name = 'first_app'
 urlpatterns = [
   
    
+    path('features/', views.features, name='features'),
+    path('about/', views.about, name='about'),
     path('signin/', views.signin, name="signin"),
     path('signup/', views.signup, name="signup"),
     path('', views.index, name="index"),
