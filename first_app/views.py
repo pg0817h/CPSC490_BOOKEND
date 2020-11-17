@@ -56,7 +56,7 @@ def create_message(sender, to, subject, message_content):
   message['to'] = to
   message['from'] = sender
   message['subject'] = subject
-  print(message, 'this is from create')
+ 
   b64_bytes = base64.urlsafe_b64encode(message.as_bytes())
   b64_string = b64_bytes.decode() 
   return {'raw': b64_string}
@@ -210,7 +210,7 @@ def signin(request):
             if user.is_active:
                 login(request, user)
                 print('success')
-                # return HttpResponseRedirect(reverse('first_app:signup'))
+               
                 return HttpResponseRedirect(reverse('dashboard'))
 
             else:
@@ -236,7 +236,7 @@ def get_date(req_day):
 
     
     return datetime.today()
-    # return now
+ 
 
 
 def prev_month(m):
@@ -299,7 +299,7 @@ def get_event_google(request):
        
         now = datetime.today().replace(day=1).isoformat() + 'Z'
         
-        # eventUpdater = service.events().get(calendarId='primary', eventId=event_Id).execute()
+       
         
         events_result = service.events().list(calendarId='primary', timeMin=now,
                                         maxResults=30, singleEvents=True,
@@ -308,16 +308,13 @@ def get_event_google(request):
         events = events_result.get('items', [])
      
    
-        # print('-----this is events',event__)
+       
         for event in events:
-            # print('this is event ',event)
+           
             start_time = event['start'].get('dateTime', event['start'].get('date'))
             end_time = event['end'].get('dateTime', event['end'].get('date'))
           
-            # event_ = Event.objects.get(id=event_id)
-
-
-            # user_ = event['attendees']
+         
        
             Event.objects.get_or_create(
                 user=request.user,
@@ -411,7 +408,7 @@ def event_details(request, event_id):
     event = Event.objects.get(id=event_id)
 
     eventmember = EventMember.objects.filter(event=event)
-    # print('this is eventmember', eventmember)
+   
     context = {
         'event': event,
         'eventmember': eventmember
