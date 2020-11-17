@@ -12,6 +12,9 @@ from datetime import timedelta
 import calendar 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import AddMember
+import json
+from email.mime.text import MIMEText
+import base64
 # from datetime import date
 
 from datetime import datetime, date
@@ -34,6 +37,84 @@ from .forms import EventForm
 
 
 # Create your views here.
+
+def create_message(sender, to, subject, message_content):
+  """Create a message for an email.
+
+  Args:
+    sender: Email address of the sender.
+    to: Email address of the receiver.
+    subject: The subject of the email message.
+    message_text: The text of the email message.
+
+  Returns:
+    An object containing a base64url encoded email object.
+  """
+
+  message = MIMEText(message_content, 'html')
+
+  message['to'] = to
+  message['from'] = sender
+  message['subject'] = subject
+ 
+  b64_bytes = base64.urlsafe_b64encode(message.as_bytes())
+  b64_string = b64_bytes.decode() 
+  return {'raw': b64_string}
+
+
+def sendEmail(request,sender,to,subject):
+    social_token = SocialToken.objects.get(account__user = request.user,account__provider='google')
+        
+
+    creds = Credentials(token = social_token.token,
+                            refresh_token = social_token.token_secret,
+                            client_id = social_token.app.client_id,
+                            client_secret= social_token.app.secret)
+
+        
+    service = build('gmail', 'v1', credentials=creds)
+    user_id = 'me'
+    msg_html = """<html> <head>
+    <style>
+      .colored {
+        color: black;
+        font-size: 15px;
+      }
+      #body {
+        font-size: 14px;
+      }
+      .btn{
+          color: white !important;
+          background-color: #008CBA;
+          text-align: center;
+          font-size: 20px;
+          border: none;
+          padding: 15px 32px;
+          text-decoration: none;
+          display: inline-block;
+
+      }
+    </style>
+  </head>
+  <body>
+    <div id='body'>
+      <p class =''>"""f"""Hi,{sender}</p>
+      <p class='colored'>{request.user} invites you to participate in the Bookend poll</p>
+      <p><a href='http://127.0.0.1:8000/' class='btn'>Participate now </a></p>
+      <p>Best wishes,</p>
+      <strong>The Bookend Team</strong>
+
+    </div>
+  </body>
+</html>
+    """
+  
+    message = create_message(sender, to, subject, msg_html)
+    message = (service.users().messages().send(userId=user_id, body=message)
+               .execute())
+    return message
+
+
 def index(request):
        
         if request.user.is_authenticated:
@@ -252,12 +333,13 @@ def get_event_google(request):
                         user_ = item['displayName']
                       
                         user_ = User.objects.get(username=user_)
-                      
+                        status_ = item['responseStatus']
                       
                         EventMember.objects.create(
                             
                             event=Event.objects.get(title=event['summary']),
-                            user=user_
+                            user=user_,
+                            status= status_
                         )
 
         return HttpResponseRedirect(reverse('first_app:calendar'))
@@ -345,6 +427,7 @@ def add_eventmember(request, event_id):
     now = datetime.today().replace(day=1).isoformat() + 'Z'
     social_token = SocialToken.objects.get(account__user = request.user,account__provider='google')
 
+    
     creds = Credentials(token = social_token.token,
                             refresh_token = social_token.token_secret,
                             client_id = social_token.app.client_id,
@@ -364,9 +447,9 @@ def add_eventmember(request, event_id):
         if forms.is_valid():
             member = EventMember.objects.filter(event=event_id)
             event = Event.objects.get(id=event_id)
-            print('event', event)
+            
             user = forms.cleaned_data['user']
-            print('this is type of user',type(user))
+           
             for event_ in eventsLists:
                
                 if str(event_['summary']) == str(eventName):
@@ -380,20 +463,23 @@ def add_eventmember(request, event_id):
                         eventUpdater['attendees'] = [  {'email': user.email, 'displayName': user.username }]
                       
                     eventUpdater['reminders'] = {"useDefault": 'false',"overrides":[{'method': 'email', 'minutes': 5}, ]}
-                    updated_event = service.events().update(calendarId='primary', eventId = eventUpdater['id'], body = eventUpdater).execute()
-                    print(updated_event)
-
+                    updated_event = service.events().update(calendarId='primary', eventId = eventUpdater['id'], body = eventUpdater,  sendUpdates='all').execute()
+                    print('this is updated event', updated_event)
+                    print('attendess',updated_event['attendees'][0]['responseStatus'])
 
 
 
 
             EventMember.objects.create(
                     event=event,
-                    user=user
+                    user=user,
+                    status= updated_event['attendees'][0]['responseStatus']
             )
 
+            user_ = forms.cleaned_data['user']
+            print(str(user_),'this is user name ')
 
-
+            sendEmail(request,str(user_.username),str(user_.email),str(eventName))
 
             
             return redirect('first_app:calendar')
@@ -407,5 +493,4 @@ class EventMemberDeleteView(generic.DeleteView):
     model = EventMember
     template_name = 'event_delete.html'
     success_url = reverse_lazy('first_app:calendar')
-
 
