@@ -1,11 +1,75 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 {% extends "nav/nav.html" %}
 {% load static %}
 {% block nav %}
 
-<body> 
-    <h1>This is the Features page</h1>
-  
-</body>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 0;
+      }
+
+      .features-title {
+        padding: 50px;
+        text-align: center;
+        background-color: #003366;
+        color: white;
+      }
+
+      .features-description {
+        padding: 100px;
+        text-align: center;
+        background-color: #ffffff;
+        margin: 0px;
+      }
+
+      .size {
+        height: 75%;
+        width: 75%;
+      }
+
+      li {
+        font-size: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="features-title">
+      <h1>Features</h1>
+    </div>
+
+    <div class="features-description">
+      <h3>
+        This product.
+      </h3>
+      <ol>
+        <li>
+          Display a calendar to the user with their scheduled meetings.
+          <img class="size" src="{% static 'images/dashboard.jpg' %}" />
+        </li>
+        <li>
+          User can be able to propose a meeting to specific contacts.
+        </li>
+        <li>
+          User is able to accept or cancel imcoming meeting proposal.
+        </li>
+        <li>
+          User can cancel schedueld meeting.
+        </li>
+        <li>
+          User will recieve an notification about a meeting proposal via email.
+        </li>
+        <li>
+          User is able to create their own personal account using their Google
+          account.
+          <img class="size" src="{% static 'images/google_signin.jpg' %}" />
+        </li>
+      </ol>
+    </div>
+  </body>
+</html>
 
 {% endblock %}
