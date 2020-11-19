@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-{% extends "nav/nav.html" %}
-{% load static %}
-{% block nav %}
+{% extends "nav/nav.html" %} {% load static %} {% block nav %}
 
 <html>
   <head>
@@ -19,19 +17,46 @@
       }
 
       .features-description {
-        padding: 100px;
         text-align: center;
         background-color: #ffffff;
-        margin: 0px;
+        /* margin: 0px; */
       }
 
       .size {
-        height: 75%;
-        width: 75%;
+        height: 100%;
+        width: 100%;
+        border-radius: 5px 5px 0 0;
       }
 
       li {
         font-size: 20px;
+      }
+
+      .card {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        transition: 0.3s;
+        border-radius: 5px;
+        width: 40%;
+        margin: 75px auto;
+        text-align: center;
+      }
+
+      .card:hover {
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+      }
+
+      .container {
+        padding: 2px 16px;
+      }
+
+      .row {
+        display: flex;
+        text-align: center;
+      }
+
+      .column {
+        flex: 33.33%;
+        padding: 5px;
       }
     </style>
   </head>
@@ -42,32 +67,61 @@
     </div>
 
     <div class="features-description">
-      <h3>
-        This product.
-      </h3>
-      <ol>
-        <li>
-          Display a calendar to the user with their scheduled meetings.
-          <img class="size" src="{% static 'images/dashboard.jpg' %}" />
-        </li>
-        <li>
-          User can be able to propose a meeting to specific contacts.
-        </li>
-        <li>
-          User is able to accept or cancel imcoming meeting proposal.
-        </li>
-        <li>
-          User can cancel schedueld meeting.
-        </li>
-        <li>
-          User will recieve an notification about a meeting proposal via email.
-        </li>
-        <li>
-          User is able to create their own personal account using their Google
-          account.
-          <img class="size" src="{% static 'images/google_signin.jpg' %}" />
-        </li>
-      </ol>
+      <div class="row">
+        <div class="column">
+          <div class="card">
+            <img class="size" src="{% static 'images/dashboard.jpg' %}" />
+            <div class="container">
+              <h4><b>Calendar</b></h4>
+              <p>
+                A calendar is displayed to the user with their scheduled
+                meetings.
+              </p>
+            </div>
+          </div>
+
+          <div class="card">
+            <img class="size" src="{% static 'images/dashboard.jpg' %}" />
+            <div class="container">
+              <h4><b>Contacts</b></h4>
+              <p>
+                User can be able to propose a meeting to specific contacts.
+              </p>
+            </div>
+          </div>
+
+          <div class="card">
+            <img class="size" src="{% static 'images/dashboard.jpg' %}" />
+            <div class="container">
+              <h4><b>Accept or Cancel</b></h4>
+              <p>
+                User is able to accept or cancel imcoming meeting proposal.
+              </p>
+            </div>
+          </div>
+
+          <div class="card">
+            <img class="size" src="{% static 'images/dashboard.jpg' %}" />
+            <div class="container">
+              <h4><b>Cancel Scheduled Meeting</b></h4>
+              <p>
+                User can cancel schedueld meeting.
+              </p>
+            </div>
+          </div>
+
+          <div class="card">
+            <img class="size" src="{% static 'images/google_signin.jpg' %}" />
+            <div class="container">
+              <h4><b>Google Sign-In</b></h4>
+              <p>
+                User is able to create their own personal account using their
+                Google account.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>
