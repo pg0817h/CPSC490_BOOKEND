@@ -1,0 +1,12 @@
+
+<!DOCTYPE html>
+{% extends "nav/nav.html" %}
+{% load static %}
+{% block nav %}
+
+{% if poll %}
+<h1>Thank you for Voting!</h1>
+{% else %}
+<h1>Thank you for confirmation!</h1>
+{% endif %}
+{% endblock %}

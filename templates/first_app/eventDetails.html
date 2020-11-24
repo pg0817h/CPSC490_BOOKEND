@@ -13,15 +13,22 @@
 <hr>
 <div >
     <h4 class="left" > Members of this Event</h4>
-    <a class="btn btn-primary " href="{% url 'first_app:add_eventmember' event.id %}"> Add Member </a>
+    <!-- <a class="btn btn-primary " href="{% url 'first_app:add_eventmember' event.id %}"> Add Member </a> -->
+    {% if event_option %}
+      <a class="btn btn-primary " href="{% url 'first_app:add_eventmember' event.id %}"> Add Member </a>
+    {% else %}
+      <a class="btn btn-primary " href="{% url 'first_app:event_options' event.id %}"> Add Member </a>
+
+    {% endif %}
 </div>
 <table class="table table-bordered">
     <thead>
         <tr>
           <th style="width: 10px">#</th>
-          <th>Name</th>
-          <th>Username</th>
+          <!-- <th>Name</th>
+          <th>Username</th> -->
           <th>Email</th>
+          <th>Name</th>
           <th>Status</th>
         </tr>
       </thead>
@@ -29,9 +36,11 @@
         {% for member in eventmember %}
         <tr role="row">
             <td>{{ forloop.counter }}</td>
-            <td>{{ member.user.first_name }} {{ member.user.last_name }}</td>
-            <td>{{ member.user.username }}</td>
-            <td>{{ member.user.email }}</td>
+            <!-- <td>{{ member.user.first_name }} {{ member.user.last_name }}</td>
+            <td>{{ member.user.username }}</td> -->
+            <!-- <td>{{ member.user.email }}</td> -->
+            <td>{{member.email}}</td>
+            <td>{{member.name}}</td>
             <td>{{ member.status }}</td>
             <td>
                 <!-- <a class="btn btn-danger" href="{% url 'first_app:remove_event' member.id %}">Remove</a> -->

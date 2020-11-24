@@ -23,6 +23,8 @@ urlpatterns = [
     path('dashboard/',views.dashboard, name="dashboard"),
     path('logout/',views.user_logout, name='logout'),
     path('special/',views.special, name='special'),
-     path('accounts/', include('allauth.urls')),
+    path('accounts/', include('allauth.urls')),
+    path('invitation/<slug:event_name>/<contact>/', views.invitationpoll, name='invitationpoll'),
+    path('invitation/event_poll/<slug:event_name>/<int:option_num>', views.choose_option,name='choose_option')
    
 ]

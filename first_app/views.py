@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseRedirect
-from first_app.forms import UserForm
+
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
@@ -11,7 +11,9 @@ from django.utils.safestring import mark_safe
 from datetime import timedelta
 import calendar 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import AddMember
+from .forms import (AddMember,EventOptionForm, EventOptionFormset, UserForm)
+
+
 import json
 from email.mime.text import MIMEText
 import base64
@@ -64,8 +66,9 @@ def create_message(sender, to, subject, message_content):
 
 def sendEmail(request,sender,to,subject):
     social_token = SocialToken.objects.get(account__user = request.user,account__provider='google')
-        
-
+    
+    url_path = subject[11:].replace(" ","")
+    contact = to
     creds = Credentials(token = social_token.token,
                             refresh_token = social_token.token_secret,
                             client_id = social_token.app.client_id,
@@ -100,7 +103,7 @@ def sendEmail(request,sender,to,subject):
     <div id='body'>
       <p class =''>"""f"""Hi,{sender}</p>
       <p class='colored'>{request.user} invites you to participate in the Bookend poll</p>
-      <p><a href='http://127.0.0.1:8000/' class='btn'>Participate now </a></p>
+      <p><a href='http://127.0.0.1:8000/invitation/{url_path}/{contact}' class='btn'>Participate now </a></p>
       <p>Best wishes,</p>
       <strong>The Bookend Team</strong>
 
@@ -254,11 +257,49 @@ def next_month(m):
     return month
 
 def delete_context_data(request):
+    social_token = SocialToken.objects.get(account__user = request.user,account__provider='google')
 
-        context_user = Event.objects.filter(user=request.user).delete()
-        print('this is deleted user',context_user)
+    
+    creds = Credentials(token = social_token.token,
+                            refresh_token = social_token.token_secret,
+                            client_id = social_token.app.client_id,
+                            client_secret= social_token.app.secret)
+    now = datetime.today().replace(day=1).isoformat() + 'Z'
+        
+    service = build('calendar','v3', credentials = creds)
+    events_result = service.events().list(calendarId='primary', timeMin=now,
+                                        maxResults=30, singleEvents=True,
+                                        orderBy='startTime').execute()
+    
+    eventsLists = events_result.get('items', [])
 
-        return HttpResponseRedirect(reverse('first_app:get_event'))
+    event_members = EventMember.objects.all()
+   
+    for event_member in event_members:
+        print(event_member.event,event_member.status)
+        eventName = event_member.event
+        print('eventName', eventName)
+        for event_ in eventsLists:
+            if str(event_['summary']) == str(eventName):
+                event_Id = event_['id']
+
+                eventUpdater = service.events().get(calendarId='primary', eventId=event_Id).execute()
+                if 'attendees' in eventUpdater:
+                    # eventUpdater['attendees'] = [ {'responseStatus':event_member.status)]
+                    for event_attendee in eventUpdater['attendees']:
+                        print(event_attendee)
+                        if(event_attendee['email'] == event_member.email):
+                            event_attendee['responseStatus'] = event_member.status
+                            updated_event = service.events().update(calendarId='primary', eventId = eventUpdater['id'], body = eventUpdater).execute()
+                    
+
+
+
+    # print('context_user',  Event.objects.filter(user=request.user))
+    context_user = Event.objects.filter(user=request.user).delete()
+   
+
+    return HttpResponseRedirect(reverse('first_app:get_event'))
     
 class CalendarView(LoginRequiredMixin, generic.ListView):
     login_url = 'first_app:signin'
@@ -329,16 +370,23 @@ def get_event_google(request):
                     if 'displayName' in item:
                         user_ = item['displayName']
                       
-                        user_ = User.objects.get(username=user_)
+                        # user_ = User.objects.get(username=user_)
                         status_ = item['responseStatus']
                       
                         EventMember.objects.create(
                             
                             event=Event.objects.get(title=event['summary']),
-                            user=user_,
-                            status= status_
+                            name = user_,
+                            email= item['email'],
+                            status= status_,
                         )
 
+
+                        #  event=event,
+                   
+                        #  name = username,
+                        #  email= email,
+                        #  status= updated_event['attendees'][0]['responseStatus']
         return HttpResponseRedirect(reverse('first_app:calendar'))
         
   
@@ -397,8 +445,16 @@ def create_event(request):
             start_time=start_time,
             end_time=end_time
         )
+
+
         return HttpResponseRedirect(reverse('first_app:calendar'))
+        # return HttpResponseRedirect(reverse('first_app:event_success'))
     return render(request, 'first_app/event.html', {'form': form})
+
+def event_success(request):
+
+#  url = reverse('first_app:eventDetails', args=(self.id,))
+    return render(request, 'first_app/event_success.html')
 class EventEdit(generic.UpdateView):
     model = Event
     fields = ['title', 'description', 'start_time', 'end_time']
@@ -408,17 +464,53 @@ def event_details(request, event_id):
     event = Event.objects.get(id=event_id)
 
     eventmember = EventMember.objects.filter(event=event)
-   
+    eventoption = EventOptions.objects.filter(event = event.title)
+        
     context = {
         'event': event,
-        'eventmember': eventmember
+        'eventmember': eventmember,
+        'event_id': event_id,
+        'event_option':eventoption,
     }
     return render(request, 'first_app/eventDetails.html', context)
 
+def event_options(request,event_id):
+    event = Event.objects.get(id=event_id)
+    
+    forms_option = EventOptionForm()
+    print(EventOptions.objects.filter(event = event.title))
+    
+    # if request.POST and forms_option.is_valid():
+    #     forms_option(request.POST)
+    #     start_time = forms_option.cleaned_data['start_time']
+    #     end_time = forms_option.cleaned_data['end_time']
+
+    if request.method == 'GET':
+        formset = EventOptionFormset(request.GET or None)
+    elif request.method == 'POST':
+        formset = EventOptionFormset(request.POST)
+        print('it posts!!!')
+        if formset.is_valid():
+            for form in formset:
+                option = form.save(commit=False)
+                option.event = event.title
+                option.save()
+            return redirect('first_app:add_eventmember',event_id)
+
+    context = {
+        'event': event,
+        'form_option': forms_option,
+        'formset': formset,
+      
+
+    }
+    
+
+    return render(request, 'first_app/event_options.html',context)
 
 def add_eventmember(request, event_id):
     forms = AddMember()
-    
+
     event = Event.objects.get(id=event_id)
    
     now = datetime.today().replace(day=1).isoformat() + 'Z'
@@ -445,8 +537,11 @@ def add_eventmember(request, event_id):
             member = EventMember.objects.filter(event=event_id)
             event = Event.objects.get(id=event_id)
             
-            user = forms.cleaned_data['user']
-           
+            # user = forms.cleaned_data['user']
+            email = forms.cleaned_data['email']
+            username = forms.cleaned_data['name']
+            print('email', email)
+            # print('user', user)
             for event_ in eventsLists:
                
                 if str(event_['summary']) == str(eventName):
@@ -454,35 +549,40 @@ def add_eventmember(request, event_id):
                     
                     eventUpdater = service.events().get(calendarId='primary', eventId=event_Id).execute()
                     if 'attendees' in eventUpdater:
-                        eventUpdater['attendees'].insert(0,{'email': user.email, 'displayName': user.username })
+                        # eventUpdater['attendees'].insert(0,{'email': user.email, 'displayName': user.username })
+                        eventUpdater['attendees'].insert(0,{'email': email, 'displayName': username })
                     else:
-                        
-                        eventUpdater['attendees'] = [  {'email': user.email, 'displayName': user.username }]
+                        eventUpdater['attendees'] = [  {'email': email, 'displayName': username }]
+                        # eventUpdater['attendees'] = [  {'email': user.email, 'displayName': user.username }]
                       
                     eventUpdater['reminders'] = {"useDefault": 'false',"overrides":[{'method': 'email', 'minutes': 5}, ]}
                     updated_event = service.events().update(calendarId='primary', eventId = eventUpdater['id'], body = eventUpdater,  sendUpdates='all').execute()
-                    print('this is updated event', updated_event)
-                    print('attendess',updated_event['attendees'][0]['responseStatus'])
+                   
 
 
 
 
             EventMember.objects.create(
                     event=event,
-                    user=user,
+                    # user=user,
+                    name = username,
+                    email= email,
                     status= updated_event['attendees'][0]['responseStatus']
             )
 
-            user_ = forms.cleaned_data['user']
-            print(str(user_),'this is user name ')
-
-            sendEmail(request,str(user_.username),str(user_.email),str(eventName))
-
+            # user_ = forms.cleaned_data['user']
+            user_ = forms.cleaned_data['name']
             
+           
+
+            # sendEmail(request,str(user_.username),str(user_.email),str('Invitation:')+ str(eventName))
+
+            sendEmail(request,str(user_),str(email),str('Invitation:')+ str(eventName))
             return redirect('first_app:calendar')
            
     context = {
-        'form': forms
+        'form': forms,
+        
     }
     return render(request, 'first_app/add_member.html', context)
 
@@ -491,3 +591,76 @@ class EventMemberDeleteView(generic.DeleteView):
     template_name = 'event_delete.html'
     success_url = reverse_lazy('first_app:calendar')
 
+def invitationpoll(request, event_name, contact):
+    event_ = Event.objects.get(title=event_name)
+    event_host = event_.user
+    events_result = EventOptions.objects.filter(event=event_)
+    print(events_result, 'events_result')
+    options_list = []
+    if events_result:
+        for events in events_result:
+        
+            o_dic = {'start_time':events.start_time.strftime('%Y-%m-%d %H:%M'), 'end_time': events.end_time.strftime('%Y-%m-%d %H:%M')}
+            options_list.append(o_dic)
+
+    
+        context = {
+            'options': options_list,
+            'event_name':event_name,
+            'host':event_host,
+            'contact':contact,
+        }
+    else:
+        print(contact)
+        print(event_)
+        context = {
+            'event_name': event_name,
+            'host':event_host,
+            'contact':contact,
+            'event': event_
+        }
+
+
+    return render(request, 'first_app/invitation_poll.html',context)
+def choose_option(request,event_name, option_num):
+    print(request.user,'request.user')
+    print('attendee_name',request.GET['attendee_email'])
+    attendee_email = request.GET['attendee_email']
+    print('event_num', event_name)
+    print('option_num', option_num)
+    event_ = Event.objects.filter(title=event_name)
+    print('event_',event_)
+   
+    
+    events_result = EventOptions.objects.filter(event=event_name)
+
+    event_member = EventMember.objects.filter(event__in=event_, email =attendee_email)
+    print('event_member',event_member)
+    event_member.update(status='accepted')
+   
+    # member_num = event_member.count()
+    # print('member_num',member_num)
+    print(events_result,'event_result')
+    # total_count = 1
+    # for event in events_result:
+    #     total_count += event.count
+
+    # print ('total_count', total_count)
+    if events_result:
+        poll_update = events_result[option_num]
+        print('poll_update',poll_update)
+        EventOptions_attendee.objects.get_or_create(
+            event_option = poll_update,
+            attendee_email = attendee_email
+        )
+    
+        print(poll_update.count,'poll_update')
+        poll_update.count += 1
+        poll_update.save()
+        context = {
+            'poll': poll_update
+        }
+        return render(request, 'first_app/confirm.html', context)
+    else:
+        return render(request, 'first_app/confirm.html')
+   
