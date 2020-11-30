@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+{% extends "nav/nav.html" %}
+{% load static %}
+{% block nav %}
+
+<body>
+    <div class='container'>
+        
+            <div style = "text-align: center; margin-top: 10%;">
+                
+                
+                <h2>{{event_name}}</h2>
+                <h5>by {{host}}</h5>
+            
+            </div>
+                
+               
+            {% if options %}
+                {% for option in options %}
+                <form method="GET" action="{% url 'choose_option'  event_name  forloop.counter0%}">
+
+                    
+                <div class="card w-50" style="margin-top: 5%; margin-left: 27%;">
+                  <div class="card-body">
+                    <h5 class="card-title">Option</h5>
+                    <p class="card-text">Start time:{{option.start_time}} </p>
+                    <p class="card-text">End time:{{option.end_time}} </p>
+                   
+                      
+                           
+                            <input type="hidden" class="form-control" name="attendee_email" placeholder="test@test.com" value={{contact}}>
+                       
+                    <button type = 'submit' class="btn btn-primary" >Choose an option</button>
+                 
+                  </div>
+                </div>
+               </form>
+           
+          
+            {% endfor %}
+        {% else %}
+        <form method="GET" action="{% url 'choose_option'  event_name  0%}">
+
+                    
+            <div class="card w-50" style="margin-top: 5%; margin-left: 27%;">
+              <div class="card-body">
+                <h5 class="card-title">{{event_name}}</h5>
+                <p class="card-text">Start time:{{event.start_time}} </p>
+                <p class="card-text">End time:{{event.end_time}} </p>
+               
+                  
+                       
+                        <input type="hidden" class="form-control" name="attendee_email" placeholder="test@test.com" value={{contact}}>
+                   
+                <button type = 'submit' class="btn btn-primary" >Confirm</button>
+             
+              </div>
+            </div>
+           </form>
+
+
+        {% endif %}
+        </div>
+         
+   
+</body>
+
+{% endblock %}

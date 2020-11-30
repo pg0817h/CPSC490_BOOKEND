@@ -41,13 +41,37 @@ class Event(models.Model):
     
 class EventMember(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100,default="")
+    email = models.EmailField(max_length=100,default="")
     status = models.CharField(max_length=100, default="")
 
     class Meta:
-        unique_together = ['event', 'user']
+        # unique_together = ['event', 'user']
 
         def __str__(self):
-            return str(self.user)
+            # return str(self.user)
+            return str(self.email)
 
+class EventOptions(models.Model):
+    # event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    count = models.IntegerField(default=0, blank = True, null = True)
+    # event = models.ForeignKey(Event, related_name='options', on_delete=models.SET_NULL, null = True)
+    event = models.CharField(max_length=100,default="")
+
+
+    class Meta:
+        
+        def __str__(self):
+            return self.count
+
+class EventOptions_attendee(models.Model):
+    event_option = models.ForeignKey(EventOptions, related_name='options',on_delete=models.SET_NULL, null=True)
+    # attendee_email = models.ForeignKey(EventMember, related_name='attendee_email', on_delete=models.SET_NULL, null=True)
+    attendee_email = models.EmailField(max_length=100,default="")
+    class Meata:
+        def __str__(self):
+            return self.attendee_email
 
