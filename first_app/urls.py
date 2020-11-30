@@ -23,5 +23,6 @@ urlpatterns = [
     path('event/<int:pk>/remove', views.EventMemberDeleteView.as_view(), name="remove_event"),
     path('event/event_success/', views.event_success, name='event_success'),
     path('event_options/<int:event_id>', views.event_options, name ='event_options'),
-
+    path('event_options/finalize/<int:event_id>',views.finalizeOption, name='finalize_option'),
+    path('event_options/finalize/confirm/<int:event_id>',views.confirm_finalize, name='confirm_finalize')
 ]

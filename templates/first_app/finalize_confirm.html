@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+{% extends "nav/nav.html" %}
+{% load static %}
+{% block nav %}
+<body>
+<h2 style='padding:3%;'> Thank you for closing the poll!</h2>   
+<h4 style='padding:3%; '>{{member}} will get email in shortly!</h4>
+
+
+<div class="container">
+   
+       <div class="card w-75">
+           <div class="card-body">
+             <h5 class="card-title">{{ title }}</h5>
+             <p class="card-text">{{ start }}</p>
+             <p class="card-text">{{  end }}</p>
+            
+           </div>
+         </div>
+   
+   </div>
+   
+
+
+
+</body>
+
+
+
+{% endblock %}

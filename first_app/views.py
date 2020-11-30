@@ -38,6 +38,8 @@ from .forms import EventForm
 
 
 
+        
+
 # Create your views here.
 
 def create_message(sender, to, subject, message_content):
@@ -67,7 +69,7 @@ def create_message(sender, to, subject, message_content):
 def sendEmail(request,sender,to,subject):
     social_token = SocialToken.objects.get(account__user = request.user,account__provider='google')
     
-    url_path = subject[11:].replace(" ","")
+    url_path = subject[11:].replace(" ","-")
     contact = to
     creds = Credentials(token = social_token.token,
                             refresh_token = social_token.token_secret,
@@ -104,6 +106,7 @@ def sendEmail(request,sender,to,subject):
       <p class =''>"""f"""Hi,{sender}</p>
       <p class='colored'>{request.user} invites you to participate in the Bookend poll</p>
       <p><a href='http://127.0.0.1:8000/invitation/{url_path}/{contact}' class='btn'>Participate now </a></p>
+    
       <p>Best wishes,</p>
       <strong>The Bookend Team</strong>
 
@@ -140,8 +143,7 @@ def dashboard(request):
     service = build('calendar','v3', credentials = creds)
    
     now = datetime.today().isoformat() + 'Z'
-    print(now)
-    print('Getting the upcoming 10 events')
+   
     events_result = service.events().list(calendarId='primary', timeMin=now,
                                         maxResults=10, singleEvents=True,
                                         orderBy='startTime').execute()
@@ -159,9 +161,14 @@ def dashboard(request):
             event_dict[event['summary']] = {}
             event_dict[event['summary']]['start'] = start
             event_dict[event['summary']]['end'] = end
-        
-      
-
+            eventoption = EventOptions.objects.filter(event = event['summary'])
+            print('eventoption',eventoption)
+            if eventoption:
+                event_dict[event['summary']]['status']  = 'Processing'
+            else:
+                event_dict[event['summary']]['status']  = 'Complete'
+   
+   
     return render(request,'first_app/dashboard.html', {'event_dict':event_dict})
 
 @login_required
@@ -486,8 +493,8 @@ def event_options(request,event_id):
     #     end_time = forms_option.cleaned_data['end_time']
 
     if request.method == 'GET':
-        formset = EventOptionFormset(request.GET or None)
-    elif request.method == 'POST':
+        formset = EventOptionFormset(queryset=EventOptions.objects.filter(event=event.title))
+    if request.method == 'POST':
         formset = EventOptionFormset(request.POST)
         print('it posts!!!')
         if formset.is_valid():
@@ -592,7 +599,9 @@ class EventMemberDeleteView(generic.DeleteView):
     success_url = reverse_lazy('first_app:calendar')
 
 def invitationpoll(request, event_name, contact):
+    event_name =  event_name.replace("-"," ")
     event_ = Event.objects.get(title=event_name)
+    event_name = event_name.replace(" ","-")
     event_host = event_.user
     events_result = EventOptions.objects.filter(event=event_)
     print(events_result, 'events_result')
@@ -628,6 +637,7 @@ def choose_option(request,event_name, option_num):
     attendee_email = request.GET['attendee_email']
     print('event_num', event_name)
     print('option_num', option_num)
+    event_name = event_name.replace("-"," ")
     event_ = Event.objects.filter(title=event_name)
     print('event_',event_)
    
@@ -664,3 +674,143 @@ def choose_option(request,event_name, option_num):
     else:
         return render(request, 'first_app/confirm.html')
    
+
+
+def finalizeOption(request, event_id):
+    event = Event.objects.get(id=event_id)
+
+    eventmember = EventMember.objects.filter(event=event)
+   
+    eventoption = EventOptions.objects.filter(event = event.title)
+    eventmember_option = EventOptions_attendee.objects.filter(event_option__in = eventoption)
+    context = {
+        'eventmembers':  eventmember,
+        'eventoptions': eventoption,
+        'eventmember_options': eventmember_option,
+        'event_id':event_id,
+
+    }
+    return render(request,'first_app/finalize_option.html',context)
+
+
+def confirm_finalize(request,event_id):
+    event = Event.objects.get(id=event_id)
+    eventoption = EventOptions.objects.filter(event = event.title)
+    eventoption_list = list(eventoption)
+    eventmembers = EventMember.objects.filter(event = event)
+    eventmember_list = []
+    separator = ', '
+    for eventmember in eventmembers:
+        eventmember_list.insert(0, eventmember.name)
+
+    eventmember_ = separator.join(eventmember_list)
+
+    now = datetime.today().replace(day=1).isoformat() + 'Z'
+    social_token = SocialToken.objects.get(account__user = request.user,account__provider='google')
+    
+    creds = Credentials(token = social_token.token,
+                            refresh_token = social_token.token_secret,
+                            client_id = social_token.app.client_id,
+                            client_secret= social_token.app.secret)
+    service = build('calendar','v3', credentials = creds)          
+    events_result = service.events().list(calendarId='primary', timeMin=now,
+                                        maxResults=30, singleEvents=True,
+                                        orderBy='startTime').execute()
+    
+    eventsLists = events_result.get('items', [])     
+    if request.method == 'POST':
+       option = request.POST.get('event_option')
+       print('option', option)
+       option = int(option)
+       print('eventoption______',eventoption_list[option]) 
+       Final_option = eventoption_list[option]
+    for event_ in eventsLists:
+        print('event_',event_)
+        print('event.title', event.title)
+        if str(event_['summary']) == str(event.title):
+            print('hererereree')
+            event_Id = event_['id']
+            eventUpdater = service.events().get(calendarId='primary', eventId=event_Id).execute()    
+            print('eventUpdater',eventUpdater)
+            print('event attendee',eventUpdater['attendees'][0]['email'])
+            final_start = Final_option.start_time.isoformat() 
+            final_end = Final_option.end_time.isoformat() 
+            print('final_start',final_start)
+            print('final_end',final_end)
+            print('api start',eventUpdater['start']['dateTime'])
+            eventUpdater['start']['dateTime'] = final_start
+            eventUpdater['end']['dateTime'] = final_end
+            updated_event = service.events().update(calendarId='primary', eventId = eventUpdater['id'], body = eventUpdater).execute()
+          
+    user_id = 'me'    
+    subject = 'Confirmation::'+ event.title 
+    sender = User.objects.get(username=request.user).email
+    # print('sender.......',sender)
+    to_list = []
+    for attendee in eventUpdater['attendees']:
+        print("attendee['email']",attendee['email'])
+        
+        to_list.insert(0,attendee['email'])
+    
+    to = separator.join(to_list)
+
+    
+    msg_html = """<html> <head>
+    <style>
+      .colored {
+        color: black;
+        font-size: 15px;
+      }
+      .time {
+          font-size: 15px;
+          color: black;
+          background-color:#008CBA;
+      }
+      #body {
+        font-size: 14px;
+      }
+      .btn{
+          color: white !important;
+          background-color: #008CBA;
+          text-align: center;
+          font-size: 20px;
+          border: none;
+          padding: 15px 32px;
+          text-decoration: none;
+          display: inline-block;
+
+      }
+    </style>
+  </head>
+  <body>
+    <div id='body'>
+      <p class =''>"""f"""Hi,</p>
+      <p class='colored'>{request.user} finalized event ' {event.title} ' </p>
+      <p class='time'>Start time: {final_start}</p>
+      <p class='time'>End time: {final_end}</p>
+      <p>Best wishes,</p>
+      <strong>The Bookend Team</strong>
+
+    </div>
+  </body>
+</html>
+    """            
+  
+    service = build('gmail', 'v1', credentials=creds)
+    message = create_message(sender, to, subject, msg_html)
+    message = (service.users().messages().send(userId=user_id, body=message)
+               .execute())
+   
+
+    event_option_end = EventOptions.objects.filter(event = str(event.title))
+    print('event_option_end', event_option_end)
+    event_option_end.delete()
+
+    context = {
+        'start': final_start,
+        'end': final_end,
+        'title': event.title,
+        'member': eventmember_
+
+    }
+    return render(request,'first_app/finalize_confirm.html',context)

@@ -42,7 +42,7 @@ class EventOptionForm(forms.ModelForm):
 EventOptionFormset = modelformset_factory(
     EventOptions,
     fields = ('start_time','end_time'),
-    extra =2,
+    extra =1,
     
     widgets = {
         'start_time': DateInput(attrs= {'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),

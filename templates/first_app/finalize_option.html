@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+{% extends "nav/nav.html" %}
+{% load static %}
+{% block nav %}
+
+<body>
+   
+
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            {% for eventoption in eventoptions %}
+           
+            <th scope="col">{{ eventoption.start_time }}  {{ eventoption.end_time }}</th>
+            
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">     </th>
+            {% for eventoption in eventoptions %}
+           
+            <td>{{ eventoption.count }}</td>
+           
+            {% endfor %}
+          </tr>
+         
+          {% for eventmember_option in eventmember_options %}
+          <tr>
+            <th scope="row">{{ eventmember_option.attendee_email}}</th>
+         
+                {% for eventoption in eventoptions %}
+              
+                {% if eventmember_option.event_option.start_time == eventoption.start_time %}
+                <td><img src='{% static "images/check.png" %}' class='final_img'></td>
+                {% else %}
+                <td>   </td>
+                {% endif %}
+             
+                {% endfor %}
+            
+           
+          </tr>
+          {% endfor %}
+        
+           
+          <tr>
+            <th scope="row">Choose Fianl options</th>
+
+            {% for eventoption in eventoptions %}
+
+            <form method='POST' action="{% url 'first_app:confirm_finalize'  event_id %}">
+                {% csrf_token %}
+           
+            <td>
+                {{eventoption}}
+            <input type="hidden" class="form-control" name="event_option"  value={{forloop.counter0}}>
+                   
+                <button type = 'submit' class='btn btn-primary' id = 'btn'>Confirm</button>
+            </td>
+            </form>
+            {% endfor %}
+          </tr>
+         
+        </tbody>
+      </table>
+</body>
+<style>
+    .final_btn {
+        border:none;
+    }
+     .final_img{
+      
+        background-repeat: no-repeat;
+        width: 37px;
+        height:35px;
+       
+       
+    }
+</style>
+
+{% endblock %}
