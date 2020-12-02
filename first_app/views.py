@@ -299,7 +299,7 @@ def delete_context_data(request):
 
                 eventUpdater = service.events().get(calendarId='primary', eventId=event_Id).execute()
                 if 'attendees' in eventUpdater:
-                    # eventUpdater['attendees'] = [ {'responseStatus':event_member.status)]
+                   
                     for event_attendee in eventUpdater['attendees']:
                         print(event_attendee)
                         if(event_attendee['email'] == event_member.email):
@@ -309,7 +309,6 @@ def delete_context_data(request):
 
 
 
-    # print('context_user',  Event.objects.filter(user=request.user))
     context_user = Event.objects.filter(user=request.user).delete()
    
 
@@ -494,16 +493,11 @@ def event_options(request,event_id):
     forms_option = EventOptionForm()
     print(EventOptions.objects.filter(event = event.title))
     
-    # if request.POST and forms_option.is_valid():
-    #     forms_option(request.POST)
-    #     start_time = forms_option.cleaned_data['start_time']
-    #     end_time = forms_option.cleaned_data['end_time']
-
     if request.method == 'GET':
         formset = EventOptionFormset(queryset=EventOptions.objects.filter(event=event.title))
     if request.method == 'POST':
         formset = EventOptionFormset(request.POST)
-        print('it posts!!!')
+     
         if formset.is_valid():
             for form in formset:
                 option = form.save(commit=False)
@@ -551,11 +545,11 @@ def add_eventmember(request, event_id):
             member = EventMember.objects.filter(event=event_id)
             event = Event.objects.get(id=event_id)
             
-            # user = forms.cleaned_data['user']
+           
             email = forms.cleaned_data['email']
             username = forms.cleaned_data['name']
             print('email', email)
-            # print('user', user)
+         
             for event_ in eventsLists:
                
                 if str(event_['summary']) == str(eventName):
@@ -563,7 +557,7 @@ def add_eventmember(request, event_id):
                     
                     eventUpdater = service.events().get(calendarId='primary', eventId=event_Id).execute()
                     if 'attendees' in eventUpdater:
-                        # eventUpdater['attendees'].insert(0,{'email': user.email, 'displayName': user.username })
+                  
                         eventUpdater['attendees'].insert(0,{'email': email, 'displayName': username })
                     else:
                         eventUpdater['attendees'] = [  {'email': email, 'displayName': username }]
@@ -578,13 +572,13 @@ def add_eventmember(request, event_id):
 
             EventMember.objects.create(
                     event=event,
-                    # user=user,
+                    
                     name = username,
                     email= email,
                     status= updated_event['attendees'][0]['responseStatus']
             )
 
-            # user_ = forms.cleaned_data['user']
+          
             user_ = forms.cleaned_data['name']
             
            
@@ -610,6 +604,7 @@ def invitationpoll(request, event_name, contact):
     event_ = Event.objects.get(title=event_name)
     event_name = event_name.replace(" ","-")
     event_host = event_.user
+    
     events_result = EventOptions.objects.filter(event=event_)
     print(events_result, 'events_result')
     options_list = []
@@ -625,6 +620,7 @@ def invitationpoll(request, event_name, contact):
             'event_name':event_name,
             'host':event_host,
             'contact':contact,
+           
         }
     else:
         print(contact)
@@ -655,14 +651,9 @@ def choose_option(request,event_name, option_num):
     print('event_member',event_member)
     event_member.update(status='accepted')
    
-    # member_num = event_member.count()
-    # print('member_num',member_num)
+   
     print(events_result,'event_result')
-    # total_count = 1
-    # for event in events_result:
-    #     total_count += event.count
-
-    # print ('total_count', total_count)
+   
     if events_result:
         poll_update = events_result[option_num]
         print('poll_update',poll_update)
@@ -675,7 +666,8 @@ def choose_option(request,event_name, option_num):
         poll_update.count += 1
         poll_update.save()
         context = {
-            'poll': poll_update
+            'poll': poll_update,
+            
         }
         return render(request, 'first_app/confirm.html', context)
     else:
@@ -752,7 +744,7 @@ def confirm_finalize(request,event_id):
     user_id = 'me'    
     subject = 'Confirmation::'+ event.title 
     sender = User.objects.get(username=request.user).email
-    # print('sender.......',sender)
+   
     to_list = []
     for attendee in eventUpdater['attendees']:
         print("attendee['email']",attendee['email'])

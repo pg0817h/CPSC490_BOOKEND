@@ -19,19 +19,20 @@
         <div><small style = "padding-left:50%; margin-bottom: 40%;">STEP 1 OF 2</small></br></br></div>
         <div class='row'>
             <div class='col'>
-                
+                <h4>Stick to the original plan</h4>
+                <hr class="my-4">
                 <h4>Event Name: {{ event.title }}</h4>
                 <p>From <span style="color: gray;">{{ event.start_time }}</span> To <span style="color: gray;">{{ event.end_time }}</span></p>
                 <hr>
                 <p>{{ event.description }}</p>
-             
+                <a class="btn btn-outline-info" type="button" href="{% url 'first_app:add_eventmember' event.id %}" >Next</a>
             </div>
-        <!-- <div class = 'vl'></div>   -->
+      
         <div class='col-2' style="margin-left: 21%;"><h4>or</h4></div>
       
         <div class ="col">
            <h4>Give options to attendees</h4> 
-           <!-- {{ form_option.as_p  }} -->
+          
           
          <form id = "form-container"method="POST">
            {% csrf_token %}
@@ -43,18 +44,17 @@
                    
            {% endfor %}
           
-         <button class ="btn btn-primary" id = "add-form" >Add options</button>
-         <button class ="btn btn-primary" id = "remove-form" >Remove options</button>
-         <button class="btn btn-primary" type="submit" href="{% url 'first_app:add_eventmember' event.id %}" >Next</button>
+         <button class ="btn btn-info" id = "add-form" >Add</button>
+         <button class ="btn btn-info" id = "remove-form" >Remove</button>
+         <hr class="my-4">
+         <button class="btn btn-outline-info" type="submit" href="{% url 'first_app:add_eventmember' event.id %}" >Next</button>
       
         </form>
         </div>
        
 
        </div>
-        <!-- <div>
-            <a class="btn btn-primary " href="{% url 'first_app:add_eventmember' event.id %}"> Next </a>
-        </div> -->
+      
 
     </div>
 
@@ -74,7 +74,9 @@
   top:70%
   
 }
-
+.btn {
+  margin-top: 4%;
+}
 </style>
 
 </html>

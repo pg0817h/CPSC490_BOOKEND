@@ -5,8 +5,32 @@
 {% block nav %}
 
 {% if poll %}
-<h1>Thank you for Voting!</h1>
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h3 class="display-4">Thank you for Voting!</h3>
+      <hr class="my-4">
+    
+    </div>
+  </div>
 {% else %}
-<h1>Thank you for confirmation!</h1>
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h3 class="display-4">Thank you for confirmation!</h3>
+      <hr class="my-4">
+    
+    </div>
+</div>
+
 {% endif %}
+
+<style>
+    .jumbotron {
+        margin-top:10%;
+    }
+    .display-4{
+        padding-left:10%;
+    }
+</style>
 {% endblock %}
