@@ -24,7 +24,7 @@ MEDIA_DIR = BASE_DIR / 'media'
 SECRET_KEY = 'vcf_gijn!c$f32b$)fq=d*v^i=s_&8%lvyc20z+#2z1iylx@@$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(int(os.environ.get('DEBUG',1)))
 
 ALLOWED_HOSTS = []
 
@@ -165,3 +165,6 @@ MEDIA_URL = '/media/'
 
 LOGIN_URL = '/signin/signin'
 LOGIN_REDIRECT_URL = "/dashboard"
+
+STATIC_ROOT ='static/'
+
