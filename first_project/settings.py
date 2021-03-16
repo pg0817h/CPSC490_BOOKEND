@@ -26,7 +26,9 @@ SECRET_KEY = 'vcf_gijn!c$f32b$)fq=d*v^i=s_&8%lvyc20z+#2z1iylx@@$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get('DEBUG',1)))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = 
+['ec2-3-16-131-228.us-east-2.compute.amazonaws.com',
+'http://127.0.0.1']
 
 
 # Application definition
