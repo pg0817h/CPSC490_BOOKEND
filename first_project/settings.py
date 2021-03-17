@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,11 +24,9 @@ MEDIA_DIR = BASE_DIR / 'media'
 SECRET_KEY = 'vcf_gijn!c$f32b$)fq=d*v^i=s_&8%lvyc20z+#2z1iylx@@$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(os.environ.get('DEBUG',1)))
-
-ALLOWED_HOSTS = 
-['ec2-3-16-131-228.us-east-2.compute.amazonaws.com',
-'http://127.0.0.1']
+#DEBUG = bool(int(os.environ.get('DEBUG_VALUE',1)))
+DEBUG = False
+ALLOWED_HOSTS = ['bookend-env.eba-zhkw9pyz.us-west-1.elasticbeanstalk.com', '127.0.0.1']
 
 
 # Application definition
@@ -156,11 +154,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-    '/var/www/static/',
-]
 
+# STATICFILES_DIRS = [
+#     BASE_DIR / "static",
+#     '/var/www/static/',
+# ]
+STATIC_ROOT = os.path.join(BASE_DIR,"static/")
 #MEDIA 
 MEDIA_ROOT = MEDIA_DIR
 MEDIA_URL = '/media/'
@@ -168,5 +167,5 @@ MEDIA_URL = '/media/'
 LOGIN_URL = '/signin/signin'
 LOGIN_REDIRECT_URL = "/dashboard"
 
-STATIC_ROOT ='static/'
+
 
